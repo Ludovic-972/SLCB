@@ -26,8 +26,12 @@
         <activity
             android:name=".UserTickets"
             android:exported="true" />
-
-
+        <activity
+            android:name=".Connexion"
+            android:exported="false" />
+        <activity
+            android:name=".Inscription"
+            android:exported="false" />
     </application>
 
 </manifest>
