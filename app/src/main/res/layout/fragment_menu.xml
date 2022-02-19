@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    tools:context=".Menu"
+    android:orientation="horizontal"
+    android:background="@color/black"
+    android:weightSum="3">
+
+
+    <ImageView
+        android:id="@+id/homePageButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:layout_marginVertical="5dp"
+        android:background="@color/white"
+        android:src="@drawable/research"
+         />
+
+    <Button
+        android:id="@+id/ticketsPageButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Mes Billets\nSLCB"
+        android:layout_marginHorizontal="5dp"/>
+
+    <ImageView
+        android:id="@+id/accountPageButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:layout_marginVertical="5dp"
+        android:background="@color/white"
+        android:src="@drawable/account"
+         />
+</LinearLayout>
