@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Home">
+
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/logo_light"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:layout_marginHorizontal="30dp"/>
+
+    <TextView
+        android:id="@+id/greetings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bonjour"
+        android:layout_below="@id/logo"
+        android:textSize="20sp"
+        android:layout_marginHorizontal="30dp"
+      />
+
+    <TextView
+        android:id="@+id/researchText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rechercher un trajet.."
+        android:layout_below="@id/greetings"
+        android:textSize="20sp"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="50dp"/>
+
+    <LinearLayout
+        android:id="@+id/departureInfos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_below="@id/researchText"
+        android:layout_marginHorizontal="30dp">
+
+        <AutoCompleteTextView
+            android:id="@+id/departureTown"
+            android:layout_width="0dp"
+            android:layout_weight="0.7"
+            android:layout_height="wrap_content"
+            android:hint="Ville de départ" />
+
+        <EditText
+            android:id="@+id/departureTime"
+            android:layout_width="0dp"
+            android:layout_weight=".3"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:focusableInTouchMode="false"
+            android:hint="00:00"/>
+
+    </LinearLayout>
+
+    <AutoCompleteTextView
+        android:id="@+id/arrivalTown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ville d'arrivée"
+        android:layout_below="@id/departureInfos"
+        android:layout_marginHorizontal="30dp"/>
+
+    <Button
+        android:id="@+id/toRides"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chercher un bus"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/arrivalTown"
+        />
+
+    <Button
+        android:id="@+id/offers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Voir les offres et les avantages"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:layout_above="@id/menu"
+        />
+
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/menu"
+        android:name="com.tchoutchou.Menu"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" />
+
+
+
+</RelativeLayout>
