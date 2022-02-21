@@ -73,7 +73,8 @@ public class Home extends AppCompatActivity {
         goToRides.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(Home.this,Rides.class);
+                startActivity(intent);
             }
         });
     }
@@ -82,7 +83,7 @@ public class Home extends AppCompatActivity {
     public void init(){
         SharedPreferences preferences = getSharedPreferences("userInfos", MODE_PRIVATE);
         this.greetings = findViewById(R.id.greetings);
-        String username = preferences.getString("Username","");
+        String username = preferences.getString("Surname","");
 
         String text = greetings.getText().toString();
 

@@ -1,6 +1,8 @@
 package com.tchoutchou;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ public class Menu extends Fragment {
                              Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_menu, container, false);
+        SharedPreferences preferences = this.getActivity().getSharedPreferences("userinfos", Context.MODE_PRIVATE);
 
         ImageView toHomePage = root.findViewById(R.id.homePageButton);
         Button toTickets = root.findViewById(R.id.ticketsPageButton);
@@ -35,17 +38,19 @@ public class Menu extends Fragment {
                 goTo(Home.class);
         });
 
-        /*
         toTickets.setOnClickListener(view -> {
             if(!(requireActivity().getClass()).equals(UserTickets.class))
                 goTo(UserTickets.class);
         });
 
         toAccount.setOnClickListener(view -> {
-            if(!(requireActivity().getClass()).equals(UserAccount.class))
-                goTo(UserAccount.class);
+            if(/*!(this.getActivity().getClass()).equals(UserAccount.class) ||*/ !(requireActivity().getClass()).equals(Connexion.class))
+                if(preferences.getString("Surname","") == "")
+                    goTo(Connexion.class);
+               /* else
+                    goTo(UserAccount.class);*/
         });
-        */
+
         return root;
     }
 
