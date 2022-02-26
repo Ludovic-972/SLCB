@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 
 public class Menu extends Fragment {
@@ -33,30 +35,32 @@ public class Menu extends Fragment {
         Button toTickets = root.findViewById(R.id.ticketsPageButton);
         ImageView toAccount = root.findViewById(R.id.accountPageButton);
 
+
         toHomePage.setOnClickListener(view -> {
-            if(!(requireActivity().getClass()).equals(Home.class))
-                goTo(Home.class);
+                goTo(new Home());
         });
 
         toTickets.setOnClickListener(view -> {
-            if(!(requireActivity().getClass()).equals(UserTickets.class))
-                goTo(UserTickets.class);
+                goTo(new UserTickets());
         });
-
+    /*
         toAccount.setOnClickListener(view -> {
-            if(/*!(this.getActivity().getClass()).equals(UserAccount.class) ||*/ !(requireActivity().getClass()).equals(Connexion.class))
-                if(preferences.getString("Surname","") == "")
-                    goTo(Connexion.class);
-               /* else
-                    goTo(UserAccount.class);*/
+            if(preferences.getString("Surname","") == "")
+                goTo(new Connexion());
+            else
+                goTo(new UserAccount());
         });
-
+*/
         return root;
     }
 
-    public void goTo(Class cl){
-        Intent intent = new Intent(this.getActivity(),cl);
-        this.startActivity(intent);
-        this.requireActivity().finish();
+    public void goTo(Fragment fragment){
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.main);
+        if(!fragment.getClass().toString().equals(currentFragment.getTag())) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.main, fragment);
+            fragmentTransaction.commit();
+        }
     }
 }
