@@ -2,15 +2,14 @@ package com.tchoutchou;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Connexion extends AppCompatActivity {
 
@@ -24,25 +23,17 @@ public class Connexion extends AppCompatActivity {
 
         Button show = findViewById(R.id.connecter);
         show.setOnClickListener(view -> {
-            Context context = getApplicationContext();
+            UserBD db = new UserBD(this);
+            List<User> userList = db.getAllUsers();
 
-            File myfilePath = new File(context.getFilesDir() + "/" + "testAndroid.txt");
-            File file = new File("/data/data/com.example.tchoutchou/files/testAndroid.txt");
-            StringBuilder text = new StringBuilder();
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    text.append(line);
-                    text.append('\n');
+            for(int i = 0; i<userList.size(); i++) {
+                if(login.getText().toString().equals(userList.get(i).getMail()) &&
+                mdp.getText().toString().equals(userList.get(i).getPassword())) {
+                    Intent intent = new Intent();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Login ou mot de passe incorrecte", Toast.LENGTH_SHORT).show();
                 }
-                br.close();
             }
-            catch (IOException e) {
-                //You'll need to add proper error handling here
-            }
-
-            
         });
     }
 }
