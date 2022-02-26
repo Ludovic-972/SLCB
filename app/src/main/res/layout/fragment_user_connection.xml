@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
+    tools:context=".fragments.user.UserConnection"
     android:orientation="vertical">
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/login"
-        android:hint="Login"
+        android:id="@+id/mail"
+        android:hint="Email"
         android:gravity="center"
         android:textSize="20dp"
         android:layout_marginTop="20dp"
@@ -19,7 +20,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/motdepasse"
+        android:id="@+id/password"
         android:hint="Mot de passe"
         android:gravity="center"
         android:textSize="20dp"
@@ -30,8 +31,16 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/connecter"
+        android:id="@+id/login"
         android:text="Se connecter"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="30dp"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/register"
+        android:text="S'inscrire"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="30dp"/>
 

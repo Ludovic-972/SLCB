@@ -1,4 +1,4 @@
-package com.tchoutchou;
+package com.tchoutchou.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
@@ -22,6 +22,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tchoutchou.R;
+import com.tchoutchou.Rides;
+import com.tchoutchou.database.UserBD;
 import com.tchoutchou.util.Towns;
 
 import java.util.Calendar;
@@ -29,36 +32,18 @@ import java.util.Calendar;
 
 public class Home extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
-
     public Home() {}
-
-
-    public static Home newInstance(String param1, String param2) {
-        Home fragment = new Home();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     AutoCompleteTextView departureTown, arrivalTown;
     EditText departureHour;
     TextView greetings;
+
+    SharedPreferences preferences;
 
 
     @Override
@@ -66,6 +51,14 @@ public class Home extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
+        preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
+        // Reset shared preferences
+        //preferences.edit().clear().commit();
+
+        /*Reset database
+        UserBD userBD = new UserBD(getContext());
+        userBD.removeAllUsers();
+         */
         departureTown = root.findViewById(R.id.departureTown);
         arrivalTown = root.findViewById(R.id.arrivalTown);
         departureHour = root.findViewById(R.id.departureHour);
@@ -115,16 +108,21 @@ public class Home extends Fragment {
             }
         });
 
-        /* Récupérer la position de la personne*/
+
+        Button offers = root.findViewById(R.id.offers);
+        if (!preferences.getString("mail", "").equals("")){
+            offers.setVisibility(View.VISIBLE);
+        }
+
+
         return root;
     }
 
 
     @SuppressLint("SetTextI18n")
     public void init(View root){
-        SharedPreferences preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
         this.greetings = root.findViewById(R.id.greetings);
-        String username = preferences.getString("Surname","");
+        String username = preferences.getString("firstname","");
 
         String text = greetings.getText().toString();
 

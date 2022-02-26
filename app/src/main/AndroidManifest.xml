@@ -34,22 +34,6 @@
             android:exported="false" />
 
 
-        <activity
-            android:name=".Connexion"
-            android:exported="false" />
-
-        <activity
-            android:name=".Inscription"
-            android:exported="false" />
-
-        <activity
-            android:name=".User"
-            android:exported="false"
-            tools:ignore="Instantiatable" />
-        <activity
-            android:name=".UserBD"
-            android:exported="false"
-            tools:ignore="Instantiatable" />
     </application>
 
 </manifest>

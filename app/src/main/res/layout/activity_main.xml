@@ -10,7 +10,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/main"
-        android:name="com.tchoutchou.Home"
+        android:name="com.tchoutchou.fragments.Home"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.9"/>
@@ -18,7 +18,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/menu"
-        android:name="com.tchoutchou.Menu"
+        android:name="com.tchoutchou.fragments.Menu"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.1" />
