@@ -11,10 +11,6 @@ import java.util.HashMap;
 
 public class Rides extends AppCompatActivity {
 
-
-    LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

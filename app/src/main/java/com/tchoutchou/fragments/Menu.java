@@ -1,7 +1,6 @@
-package com.tchoutchou;
+package com.tchoutchou.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +12,9 @@ import android.widget.ImageView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.tchoutchou.R;
+import com.tchoutchou.fragments.user.UserConnection;
 
 
 public class Menu extends Fragment {
@@ -43,14 +45,14 @@ public class Menu extends Fragment {
         toTickets.setOnClickListener(view -> {
                 goTo(new UserTickets());
         });
-    /*
+
         toAccount.setOnClickListener(view -> {
             if(preferences.getString("Surname","") == "")
-                goTo(new Connexion());
-            else
-                goTo(new UserAccount());
+                goTo(new UserConnection());
+           /* else
+                goTo(new UserAccount());*/
         });
-*/
+
         return root;
     }
 
