@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.tchoutchou">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -36,6 +37,14 @@
         <activity
             android:name=".Inscription"
             android:exported="false" />
+        <activity
+            android:name=".User"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
+        <activity
+            android:name=".UserBD"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
     </application>
 
 </manifest>
