@@ -1,98 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+tools:context=".fragments.Home">
+
+<ImageView
+    android:id="@+id/logo"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.Home">
+    android:layout_height="wrap_content"
+    app:srcCompat="@drawable/logo_light"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="30dp"
+    android:layout_marginHorizontal="30dp"/>
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/logo_light"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"
-        android:layout_marginHorizontal="30dp"/>
+<TextView
+    android:id="@+id/greetings"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Bonjour"
+    android:layout_below="@id/logo"
+    android:textSize="20sp"
+    android:layout_marginHorizontal="30dp"
+    />
+
+<TextView
+    android:id="@+id/researchText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Rechercher un trajet.."
+    android:layout_below="@id/greetings"
+    android:textSize="20sp"
+    android:layout_marginHorizontal="30dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="10dp"/>
 
     <TextView
-        android:id="@+id/greetings"
-        android:layout_width="wrap_content"
+        android:id="@+id/when"
+        android:layout_width="70dp"
         android:layout_height="wrap_content"
-        android:text="Bonjour"
-        android:layout_below="@id/logo"
-        android:textSize="20sp"
-        android:layout_marginHorizontal="30dp"
-        />
-
-    <TextView
-        android:id="@+id/researchText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Rechercher un trajet.."
-        android:layout_below="@id/greetings"
-        android:textSize="20sp"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="10dp"/>
-
-    <LinearLayout
-        android:id="@+id/departureInfos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1"
         android:layout_below="@id/researchText"
-        android:layout_marginHorizontal="30dp">
+        android:layout_alignBaseline="@id/tripDay"
+        android:layout_marginStart="30dp"
+        android:text="Quand ?"
+        android:textSize="18sp" />
 
-        <AutoCompleteTextView
-            android:id="@+id/departureTown"
-            android:layout_width="0dp"
-            android:layout_weight="0.7"
-            android:layout_height="wrap_content"
-            android:inputType="textCapWords"
-            android:hint="Ville de départ" />
+    <EditText
+        android:id="@+id/tripDay"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/researchText"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@id/when"
+        android:focusableInTouchMode="false"
+        android:hint="Date"
+        android:inputType="date"
+        android:minHeight="48dp" />
 
-        <EditText
-            android:id="@+id/departureHour"
-            android:layout_weight=".3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:focusableInTouchMode="false"
-            android:inputType="time"
-            android:hint="00:00"/>
+    <EditText
+        android:id="@+id/departureHour"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/tripDay"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        android:layout_toEndOf="@id/tripDay"
+        android:focusableInTouchMode="false"
+        android:hint="00:00"
+        android:inputType="time"
+        android:minHeight="48dp" />
 
-    </LinearLayout>
+    <TextView
+        android:id="@+id/from"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tripDay"
+        android:layout_alignBaseline="@id/departureTown"
+        android:layout_marginStart="30dp"
+        android:text="D'où ?"
+        android:textSize="18sp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/departureTown"
+        android:layout_width="279dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tripDay"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="30dp"
+        android:layout_toEndOf="@id/from"
+        android:hint="Ville de départ"
+        android:inputType="textCapWords"
+        android:minHeight="48dp" />
+
+    <TextView
+        android:id="@+id/to"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/departureTown"
+        android:layout_alignBaseline="@id/arrivalTown"
+        android:layout_marginStart="30dp"
+        android:text="Vers ?"
+        android:textSize="18sp" />
 
     <AutoCompleteTextView
         android:id="@+id/arrivalTown"
-        android:layout_width="match_parent"
+        android:layout_width="312dp"
         android:layout_height="wrap_content"
+        android:layout_below="@id/departureTown"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="30dp"
+        android:layout_toEndOf="@+id/to"
         android:hint="Ville d'arrivée"
         android:inputType="textCapWords"
-        android:layout_below="@id/departureInfos"
-        android:layout_marginHorizontal="30dp"/>
+        android:minHeight="48dp" />
 
     <Button
-        android:id="@+id/toRides"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Chercher un bus"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:layout_below="@id/arrivalTown"
-        />
+    android:id="@+id/toRides"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Chercher un bus"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="15dp"
+    android:layout_below="@id/arrivalTown"
+    />
 
-    <Button
-        android:id="@+id/offers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Voir les offres et les avantages"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentBottom="true"
-        android:visibility="invisible"
-        />
+<Button
+    android:id="@+id/offers"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Voir les offres et les avantages"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="20dp"
+    android:layout_alignParentBottom="true"
+    android:visibility="invisible"
+    />
 
 </RelativeLayout>

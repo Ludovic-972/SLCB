@@ -1,6 +1,6 @@
 package com.tchoutchou.fragments;
 
-import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -23,11 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tchoutchou.R;
-import com.tchoutchou.Rides;
-import com.tchoutchou.database.UserBD;
-import com.tchoutchou.util.Towns;
+import com.tchoutchou.TripActivity;
+import com.tchoutchou.model.Towns;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class Home extends Fragment {
@@ -40,10 +41,10 @@ public class Home extends Fragment {
     }
 
     AutoCompleteTextView departureTown, arrivalTown;
-    EditText departureHour;
-    TextView greetings;
+    EditText departureHour, tripDay;
 
     SharedPreferences preferences;
+    private List<String> towns = new ArrayList<>();
 
 
     @Override
@@ -59,12 +60,41 @@ public class Home extends Fragment {
         UserBD userBD = new UserBD(getContext());
         userBD.removeAllUsers();
          */
+
+        /* Détecter la position avec le GPS et entrer dans  departure Town*/
         departureTown = root.findViewById(R.id.departureTown);
         arrivalTown = root.findViewById(R.id.arrivalTown);
         departureHour = root.findViewById(R.id.departureHour);
         Button goToRides = root.findViewById(R.id.toRides);
 
-        init(root);
+        TextView greetings = root.findViewById(R.id.greetings);
+        String username = preferences.getString("firstname","");
+
+        String text = greetings.getText().toString();
+
+        greetings.setText(text+" "+username+"\uD83D\uDC4B,");
+
+        Thread townsRecuperation = new Thread(){
+            @Override
+            public void run() {
+                towns = Towns.getAllTowns();
+            }
+        };
+        townsRecuperation.start();
+
+
+        try {
+            townsRecuperation.join() ;
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    towns);
+
+            departureTown.setAdapter(adapter);
+            arrivalTown.setAdapter(adapter);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         departureHour.setOnClickListener(view -> {
             Calendar calendar = Calendar.getInstance();
@@ -77,24 +107,23 @@ public class Home extends Fragment {
             timePickerDialog.show();
         });
 
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                Towns.getTowns());
-
-        departureTown.setAdapter(adapter);
-        arrivalTown.setAdapter(adapter);
-
         goToRides.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(notEmptyInputs()) {
-                    Intent intent = new Intent(requireActivity(), Rides.class);
-                    intent.putExtra("departure", departureTown.getText().toString());
-                    intent.putExtra("arrival", arrivalTown.getText().toString());
-                    intent.putExtra("departureHour", departureHour.getText().toString());
-                    startActivity(intent);
+                    if (towns.contains(departureTown.getText().toString()) && towns.contains(arrivalTown.getText().toString())) {
+                        Intent intent = new Intent(requireActivity(), TripActivity.class);
+
+                        intent.putExtra("departureTown", departureTown.getText().toString());
+                        intent.putExtra("arrivalTown", arrivalTown.getText().toString());
+                        intent.putExtra("departureHour", departureHour.getText().toString());
+                        intent.putExtra("tripDay", tripDay.getText().toString());
+
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(requireContext(), "Veuillez entrer des villes existantes",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }else{
                     Toast.makeText(requireContext(), "Veuillez remplir tous les champs",
                             Toast.LENGTH_SHORT).show();
@@ -104,8 +133,27 @@ public class Home extends Fragment {
             private boolean notEmptyInputs() {
                 return !departureTown.getText().toString().equals("")
                         && !arrivalTown.getText().toString().equals("")
-                        && !departureHour.getText().toString().equals("");
+                        && !departureHour.getText().toString().equals("")
+                        && !tripDay.getText().toString().equals("");
             }
+        });
+
+        tripDay = root.findViewById(R.id.tripDay);
+        tripDay.setOnClickListener(view -> {
+
+            Calendar c = Calendar.getInstance();
+
+            DatePickerDialog.OnDateSetListener dateSetListener = (view1, year, monthOfYear, dayOfMonth) -> {
+                String date = "";
+                date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
+                date+= (monthOfYear<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
+                date+= year;
+                tripDay.setText(date);
+            };
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                    android.R.style.Theme_Holo_Light_Dialog_NoActionBar
+                    ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.show();
         });
 
 
@@ -116,18 +164,6 @@ public class Home extends Fragment {
 
 
         return root;
-    }
-
-
-    @SuppressLint("SetTextI18n")
-    public void init(View root){
-        this.greetings = root.findViewById(R.id.greetings);
-        String username = preferences.getString("firstname","");
-
-        String text = greetings.getText().toString();
-
-        greetings.setText(text+" "+username+"\uD83D\uDC4B,");
-
     }
 
     private boolean isNetworkConnected(){

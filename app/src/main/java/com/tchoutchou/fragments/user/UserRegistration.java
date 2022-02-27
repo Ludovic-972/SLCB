@@ -23,6 +23,7 @@ import com.tchoutchou.R;
 import com.tchoutchou.database.UserBD;
 import com.tchoutchou.fragments.Home;
 import com.tchoutchou.model.User;
+import com.tchoutchou.util.FragmentReplacement;
 
 import java.util.Calendar;
 
@@ -64,11 +65,8 @@ public class UserRegistration extends Fragment {
                                           int monthOfYear, int dayOfMonth) {
                         String date = "";
                         date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
-
                         date+= (monthOfYear<10) ? "0"+monthOfYear+"-" : monthOfYear+"-";
-
                         date+= year;
-
                         anniversaire.setText(date);
                     }
                 };
@@ -122,17 +120,8 @@ public class UserRegistration extends Fragment {
             anniversaire.setText("");
             numero.setText("");
             mdp.setText("");
-            goTo(new Home());
+            FragmentReplacement.Replace(requireActivity().getSupportFragmentManager(),new Home());
         }
     }
 
-    public void goTo(Fragment fragment){
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        Fragment currentFragment = fragmentManager.findFragmentById(R.id.main);
-        if(!fragment.getClass().toString().equals(currentFragment.getTag())) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main, fragment);
-            fragmentTransaction.commit();
-        }
-    }
 }

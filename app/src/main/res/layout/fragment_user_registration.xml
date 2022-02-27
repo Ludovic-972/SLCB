@@ -7,15 +7,15 @@
     android:orientation="vertical">
 
     <EditText
+        android:id="@+id/nom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/nom"
-        android:hint="Nom"
-        android:gravity="center"
-        android:textSize="20dp"
-        android:layout_marginTop="20dp"
         android:layout_marginHorizontal="30dp"
-        android:inputType="textCapCharacters"/>
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:hint="Nom"
+        android:inputType="textCapWords"
+        android:textSize="20dp" />
 
     <EditText
         android:layout_width="match_parent"

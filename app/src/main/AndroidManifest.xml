@@ -28,12 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".Rides"
+            android:name=".TripActivity"
             android:exported="false" />
-
-
     </application>
 
 </manifest>
