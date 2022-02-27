@@ -20,6 +20,7 @@ import com.tchoutchou.fragments.Home;
 import com.tchoutchou.R;
 import com.tchoutchou.database.UserBD;
 import com.tchoutchou.model.User;
+import com.tchoutchou.util.FragmentReplacement;
 
 import java.util.List;
 
@@ -37,6 +38,8 @@ public class UserConnection extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_user_connection, container, false);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+
         EditText mail =root.findViewById(R.id.mail);
         EditText mdp = root.findViewById(R.id.password);
 
@@ -54,24 +57,14 @@ public class UserConnection extends Fragment {
                 }else{
                     User user = User.getInformations(loginText,passwordText);
                     saveUser(user);
-                    goTo(new Home());
+                    FragmentReplacement.Replace(fragmentManager,new Home());
                 }
             }
         });
 
         Button register = root.findViewById(R.id.register);
-        register.setOnClickListener(view -> goTo(new UserRegistration()));
+        register.setOnClickListener(view -> FragmentReplacement.Replace(fragmentManager,new UserRegistration()));
         return root;
-    }
-
-    public void goTo(Fragment fragment){
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        Fragment currentFragment = fragmentManager.findFragmentById(R.id.main);
-        if(!fragment.getClass().toString().equals(currentFragment.getTag())) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main, fragment);
-            fragmentTransaction.commit();
-        }
     }
 
     public void saveUser(User user){

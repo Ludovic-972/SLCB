@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:id="@+id/departureHour"
+            android:layout_width="85dp"
+            android:layout_height="55dp"
+            android:textSize="15sp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:layout_alignParentStart="true"
+            android:text="00:00" />
+
+        <TextView
+            android:id="@+id/departureTown"
+            android:layout_width="250dp"
+            android:layout_height="55dp"
+            android:textSize="15sp"
+            android:gravity="center_vertical"
+            android:layout_toEndOf="@id/departureHour"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/arrivalHour"
+            android:layout_width="85dp"
+            android:layout_height="55dp"
+            android:textSize="15sp"
+            android:layout_below="@id/departureHour"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:text="00:00" />
+
+        <TextView
+            android:id="@+id/arrivalTown"
+            android:layout_width="250dp"
+            android:layout_height="55dp"
+            android:textSize="15sp"
+            android:gravity="center_vertical"
+            android:layout_alignBottom="@id/arrivalHour"
+            android:layout_toEndOf="@id/arrivalHour"
+            android:text="TextView" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="70dp"
+        android:layout_height="73dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="X €"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/tripTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/price"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="20dp"
+        android:text="X min"
+        android:textSize="12sp" />
+</RelativeLayout>

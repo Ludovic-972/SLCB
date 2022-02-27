@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.tchoutchou.R;
 import com.tchoutchou.fragments.user.UserConnection;
+import com.tchoutchou.util.FragmentReplacement;
 
 
 public class Menu extends Fragment {
@@ -26,12 +27,15 @@ public class Menu extends Fragment {
 
     }
 
+
+    FragmentManager fragmentManager;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_menu, container, false);
         SharedPreferences preferences = this.getActivity().getSharedPreferences("userinfos", Context.MODE_PRIVATE);
+        fragmentManager = requireActivity().getSupportFragmentManager();
 
         ImageView toHomePage = root.findViewById(R.id.homePageButton);
         Button toTickets = root.findViewById(R.id.ticketsPageButton);
@@ -39,16 +43,16 @@ public class Menu extends Fragment {
 
 
         toHomePage.setOnClickListener(view -> {
-                goTo(new Home());
+            FragmentReplacement.Replace(fragmentManager,new Home());
         });
 
         toTickets.setOnClickListener(view -> {
-                goTo(new UserTickets());
+            FragmentReplacement.Replace(fragmentManager,new UserTickets());
         });
 
         toAccount.setOnClickListener(view -> {
             if(preferences.getString("Surname","") == "")
-                goTo(new UserConnection());
+                FragmentReplacement.Replace(fragmentManager,new UserConnection());
            /* else
                 goTo(new UserAccount());*/
         });
