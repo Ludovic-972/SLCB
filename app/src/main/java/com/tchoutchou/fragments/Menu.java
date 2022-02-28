@@ -3,25 +3,19 @@ package com.tchoutchou.fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.tchoutchou.R;
 import com.tchoutchou.fragments.user.*;
-import com.tchoutchou.util.FragmentReplacement;
+import com.tchoutchou.util.MainFragmentReplacement;
 
 
 public class Menu extends Fragment {
@@ -49,15 +43,15 @@ public class Menu extends Fragment {
         ImageButton toAccount = root.findViewById(R.id.accountPageButton);
 
 
-        toHomePage.setOnClickListener(view -> FragmentReplacement.Replace(fragmentManager,new Home()));
+        toHomePage.setOnClickListener(view -> MainFragmentReplacement.Replace(fragmentManager,new Home()));
 
-        toTickets.setOnClickListener(view -> FragmentReplacement.Replace(fragmentManager,new UserTickets()));
+        toTickets.setOnClickListener(view -> MainFragmentReplacement.Replace(fragmentManager,new UserTickets()));
 
         toAccount.setOnClickListener(view -> {
             if(preferences.getString("mail", "").equals(""))
-                FragmentReplacement.Replace(fragmentManager,new UserConnection());
+                MainFragmentReplacement.Replace(fragmentManager,new UserConnection());
             else
-                FragmentReplacement.Replace(fragmentManager,new UserAccount());
+                MainFragmentReplacement.Replace(fragmentManager,new UserAccount());
         });
 
         return root;

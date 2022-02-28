@@ -1,15 +1,21 @@
 package com.tchoutchou.model;
 
-import static com.tchoutchou.MainActivity.getAppContext;
 
 import android.util.Log;
 
-import com.tchoutchou.database.UserBD;
+import com.tchoutchou.util.InexistantUserException;
+import com.tchoutchou.util.JDBCUtils;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
 
+    private int id;
     private String lastname;
     private String firstname;
     private String mail;
@@ -21,7 +27,8 @@ public class User {
 
     }
 
-    public User(String _lastname,String _firstname,String _mail,String _birthdate,String _phoneNumber,String _password){
+    public User(int _id,String _lastname,String _firstname,String _mail,String _password,String _birthdate,String _phoneNumber){
+        this.id = _id;
         this.lastname = _lastname;
         this.firstname = _firstname;
         this.mail = _mail;
@@ -29,6 +36,10 @@ public class User {
         this.phoneNumber = _phoneNumber;
         this.password = _password;
     }
+
+    public int getId() {return id;}
+
+    public void setId(int id) {this.id = id;}
 
     public String getLastname() {
         return lastname;
@@ -79,18 +90,6 @@ public class User {
     }
 
     @Override
-    public String toString() {
-        return "User{" +
-                "lastname='" + lastname + '\'' +
-                ", firstname='" + firstname + '\'' +
-                ", mail='" + mail + '\'' +
-                ", birthday='" + birthdate + '\'' +
-                ", phone='" + phoneNumber + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (o instanceof User){
             User user = (User) o;
@@ -99,31 +98,100 @@ public class User {
         return false;
     }
 
-
-    public static boolean isRegistered(String loginText, String passwordText) {
-        UserBD userBD = new UserBD(getAppContext());
-        List<User> users = userBD.getAllUsers();
-        for(User user : users){
-            if (user.getMail().equals(loginText) && user.getPassword().equals(passwordText))
-                return true;
+    public static User addUser(String lastname,String firstname,String mail,
+                               String birthdate,String phoneNumber,String password){
+        User user = null;
+        Connection connection = JDBCUtils.getConnection();
+        String req = "Insert into users (`lastname`, `firstname`, `mail`, `password`, `birthday`, `phoneNumber`) values (" +
+                "\""+lastname+"\"," +
+                "\""+firstname+"\"," +
+                "\""+mail+"\"," +
+                "\""+password+"\"," +
+                "\""+JDBCUtils.dateToSQLFormat(birthdate)+"\"," +
+                "\""+phoneNumber+"\")";
+        Statement st;
+        try {
+            st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            st.executeUpdate(req);
+        }catch(SQLException e){
+            e.printStackTrace();
         }
-        return false;
+
+        try {
+            user = getInformationsFromDB(mail,password);
+        } catch (InexistantUserException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("ExtDB_addUser",user.toString());
+        return user;
     }
 
-    public static User getInformations(String loginText, String passwordText) {
-        UserBD userBD = new UserBD(getAppContext());
-        List<User> users = userBD.getAllUsers();
-        User res = new User();
+
+    public static User getInformationsFromDB(String mail, String password) throws InexistantUserException {
+        List<User> users = getAllUsers();
+        User res = null;
         for(User user : users){
-            if (user.getMail().equals(loginText) && user.getPassword().equals(passwordText)){
+            if (user.getMail().equals(mail) && user.getPassword().equals(password)){
+                Log.d("ExtDB",user.toString());
+                res = new User();
+                res.setId(user.getId());
                 res.setFirstname(user.getFirstname());
                 res.setLastname(user.getLastname());
                 res.setBirthdate(user.getBirthdate());
                 res.setMail(user.getMail());
                 res.setPassword(user.getPassword());
                 res.setPhoneNumber(user.getPhoneNumber());
+                break;
             }
         }
-        return  res;
+        if (res == null)
+            throw new InexistantUserException();
+        else
+            return res;
+    }
+
+    public static List<User> getAllUsers(){
+        List<User> usersList = new ArrayList<>();
+        String req = "select * from users";
+        Connection connection = JDBCUtils.getConnection();
+        Statement st;
+        ResultSet rs;
+
+        try {
+            st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            rs = st.executeQuery(req);
+
+            while (rs.next()){
+                usersList.add(new User(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5),
+                        rs.getString(6),
+                        rs.getString(7))
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            JDBCUtils.close(connection);
+        }
+        return usersList;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", lastname='" + lastname + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", mail='" + mail + '\'' +
+                ", birthdate='" + birthdate + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

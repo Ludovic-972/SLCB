@@ -9,8 +9,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.tchoutchou.MainActivity;
 import com.tchoutchou.R;
 
-public class FragmentReplacement {
-    private FragmentReplacement(){}
+public class MainFragmentReplacement {
+    private MainFragmentReplacement(){}
 
     public static void Replace(FragmentManager fragmentManager,Fragment frag){
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.main);

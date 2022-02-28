@@ -18,8 +18,7 @@
         android:src="@drawable/research"
         android:padding="10dp"
         android:scaleType="fitCenter"
-        android:background="@drawable/ripple"
-         />
+        android:background="@drawable/ripple"/>
 
     <Button
         android:id="@+id/ticketsPageButton"
