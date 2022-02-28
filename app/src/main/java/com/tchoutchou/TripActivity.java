@@ -1,15 +1,13 @@
 package com.tchoutchou;
 
-import static java.security.AccessController.getContext;
-
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.ArrayAdapter;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.tchoutchou.model.Towns;
 import com.tchoutchou.model.Trip;
 import com.tchoutchou.util.TripListAdapter;
 
@@ -18,26 +16,34 @@ import java.util.List;
 
 public class TripActivity extends AppCompatActivity {
 
-    List<Trip> trips = new ArrayList<>();
+    private List<Trip> trips = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rides);
 
-        Bundle tripInfos = getIntent().getExtras();
+        getSupportActionBar().show();
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.trip_action_bar);
+
+        View view=getSupportActionBar().getCustomView();
+        Bundle tripsInfos = getIntent().getExtras();
+
+        TextView name=view.findViewById(R.id.tripDay);
+        name.setText(tripsInfos.getString("tripDay"));
 
         ListView tripListView = findViewById(R.id.trips);
 
         Thread tripsRecuperation = new Thread(){
             @Override
             public void run() {
-                trips = Trip.getTrips(tripInfos);
+                trips = Trip.getTrips(tripsInfos);
             }
         };
         tripsRecuperation.start();
-
-
         try {
             tripsRecuperation.join() ;
             tripListView.setAdapter(new TripListAdapter(this,trips));

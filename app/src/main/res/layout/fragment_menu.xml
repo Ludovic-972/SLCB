@@ -9,15 +9,16 @@
     android:weightSum="3">
 
 
-    <ImageView
+    <ImageButton
         android:id="@+id/homePageButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:clickable="true"
         android:layout_marginVertical="5dp"
         android:background="@color/white"
         android:src="@drawable/research"
+        android:padding="10dp"
+        android:scaleType="fitCenter"
          />
 
     <Button
@@ -28,14 +29,15 @@
         android:text="Mes Billets\nSLCB"
         android:layout_marginHorizontal="5dp"/>
 
-    <ImageView
+    <ImageButton
         android:id="@+id/accountPageButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:clickable="true"
         android:layout_marginVertical="5dp"
         android:background="@color/white"
         android:src="@drawable/account"
+        android:padding="10dp"
+        android:scaleType="fitCenter"
          />
 </LinearLayout>

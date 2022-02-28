@@ -1,20 +1,25 @@
 package com.tchoutchou.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.tchoutchou.R;
-import com.tchoutchou.fragments.user.UserConnection;
+import com.tchoutchou.fragments.user.*;
 import com.tchoutchou.util.FragmentReplacement;
 
 
@@ -29,6 +34,7 @@ public class Menu extends Fragment {
 
 
     FragmentManager fragmentManager;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -37,36 +43,23 @@ public class Menu extends Fragment {
         SharedPreferences preferences = this.getActivity().getSharedPreferences("userinfos", Context.MODE_PRIVATE);
         fragmentManager = requireActivity().getSupportFragmentManager();
 
-        ImageView toHomePage = root.findViewById(R.id.homePageButton);
+        ImageButton toHomePage = root.findViewById(R.id.homePageButton);
         Button toTickets = root.findViewById(R.id.ticketsPageButton);
-        ImageView toAccount = root.findViewById(R.id.accountPageButton);
+        ImageButton toAccount = root.findViewById(R.id.accountPageButton);
 
 
-        toHomePage.setOnClickListener(view -> {
-            FragmentReplacement.Replace(fragmentManager,new Home());
-        });
+        toHomePage.setOnClickListener(view -> FragmentReplacement.Replace(fragmentManager,new Home()));
 
-        toTickets.setOnClickListener(view -> {
-            FragmentReplacement.Replace(fragmentManager,new UserTickets());
-        });
+        toTickets.setOnClickListener(view -> FragmentReplacement.Replace(fragmentManager,new UserTickets()));
 
         toAccount.setOnClickListener(view -> {
-            if(preferences.getString("Surname","") == "")
+            if(preferences.getString("Surname", "").equals(""))
                 FragmentReplacement.Replace(fragmentManager,new UserConnection());
-           /* else
-                goTo(new UserAccount());*/
+            else
+                FragmentReplacement.Replace(fragmentManager,new UserAccount());
         });
 
         return root;
     }
 
-    public void goTo(Fragment fragment){
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        Fragment currentFragment = fragmentManager.findFragmentById(R.id.main);
-        if(!fragment.getClass().toString().equals(currentFragment.getTag())) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.main, fragment);
-            fragmentTransaction.commit();
-        }
-    }
 }
