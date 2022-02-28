@@ -63,7 +63,7 @@ public class Trip {
         String req = "SELECT DATE(departureTime),DATE_FORMAT(departureTime,\"%H:%i\"),departureTown,DATE_FORMAT(arrivalTime,\"%H:%i\"),arrivalTown," +
                 "price,TIMESTAMPDIFF(MINUTE,departureTime,arrivalTime) " +
                 "FROM trips " +
-                "WHERE departureTime=>\""+dateToSQLFormat((String) infos.get("tripDay"))+" "+infos.get("departureHour")+"\""+
+                "WHERE departureTime >=\""+JDBCUtils.dateToSQLFormat((String) infos.get("tripDay"))+" "+infos.get("departureHour")+"\""+
                 " AND departureTown=\""+infos.get("departureTown")+"\""+
                 " AND arrivalTown=\""+infos.get("arrivalTown")+"\""+
                 " ORDER BY departureTime ASC";
@@ -97,10 +97,7 @@ public class Trip {
         return tripList;
     }
 
-    private static String dateToSQLFormat(String date) {
-        String[] tab = date.split("-");
-        return tab[2]+'-'+tab[1]+'-'+tab[0];
-    }
+
 
     @Override
     public String toString() {

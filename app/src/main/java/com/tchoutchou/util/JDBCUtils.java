@@ -28,4 +28,10 @@ public class JDBCUtils {
             e.printStackTrace();
         }
     }
+
+    public static String dateToSQLFormat(String date) {
+        String[] tab = date.split("-");
+        return tab[2]+'-'+tab[1]+'-'+tab[0];
+    }
+
 }

@@ -13,11 +13,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.tchoutchou.fragments.Home;
-import com.tchoutchou.util.FragmentReplacement;
+import com.tchoutchou.util.MainFragmentReplacement;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static Context context;
     private static boolean appIsOpen = false;
     private Handler handler;
     private boolean doubleBackToExitPressedOnce = false;
@@ -31,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().hide();
             setContentView(loadingScreen);
-            context = getApplicationContext();
             handler = new Handler();
         if (!appIsOpen) {
             Runnable change = () -> setContentView(main);
@@ -53,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static Context getAppContext() { return context; }
-
     @Override
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
@@ -75,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 2000);
         }else{
-            FragmentReplacement.Replace(fm,new Home());
+            MainFragmentReplacement.Replace(fm,new Home());
          }
     }
 }
