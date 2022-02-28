@@ -63,7 +63,7 @@ public class Trip {
         String req = "SELECT DATE(departureTime),DATE_FORMAT(departureTime,\"%H:%i\"),departureTown,DATE_FORMAT(arrivalTime,\"%H:%i\"),arrivalTown," +
                 "price,TIMESTAMPDIFF(MINUTE,departureTime,arrivalTime) " +
                 "FROM trips " +
-                "WHERE departureTime>=\""+dateToSQLFormat((String) infos.get("tripDay"))+" "+infos.get("departureHour")+"\""+
+                "WHERE departureTime=>\""+dateToSQLFormat((String) infos.get("tripDay"))+" "+infos.get("departureHour")+"\""+
                 " AND departureTown=\""+infos.get("departureTown")+"\""+
                 " AND arrivalTown=\""+infos.get("arrivalTown")+"\""+
                 " ORDER BY departureTime ASC";

@@ -7,6 +7,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,7 +41,7 @@ public class Menu extends Fragment {
                              Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_menu, container, false);
-        SharedPreferences preferences = this.getActivity().getSharedPreferences("userinfos", Context.MODE_PRIVATE);
+        SharedPreferences preferences = this.getActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
         fragmentManager = requireActivity().getSupportFragmentManager();
 
         ImageButton toHomePage = root.findViewById(R.id.homePageButton);
@@ -53,7 +54,7 @@ public class Menu extends Fragment {
         toTickets.setOnClickListener(view -> FragmentReplacement.Replace(fragmentManager,new UserTickets()));
 
         toAccount.setOnClickListener(view -> {
-            if(preferences.getString("Surname", "").equals(""))
+            if(preferences.getString("mail", "").equals(""))
                 FragmentReplacement.Replace(fragmentManager,new UserConnection());
             else
                 FragmentReplacement.Replace(fragmentManager,new UserAccount());

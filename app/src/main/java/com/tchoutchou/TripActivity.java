@@ -1,10 +1,12 @@
 package com.tchoutchou;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +20,7 @@ public class TripActivity extends AppCompatActivity {
 
     private List<Trip> trips = new ArrayList<>();
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +36,7 @@ public class TripActivity extends AppCompatActivity {
         Bundle tripsInfos = getIntent().getExtras();
 
         TextView name=view.findViewById(R.id.tripDay);
-        name.setText(tripsInfos.getString("tripDay"));
+        name.setText(String.join("/",tripsInfos.getString("tripDay").split("-")));
 
         ListView tripListView = findViewById(R.id.trips);
 

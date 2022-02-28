@@ -8,7 +8,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/topText"
         android:gravity="center_horizontal"
         android:textSize="40dp"
@@ -18,7 +18,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/informations"
         android:gravity="center_horizontal"
         android:textSize="30dp"
@@ -27,7 +27,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/adresseMail"
         android:gravity="center_horizontal"
         android:textSize="30dp"
@@ -36,7 +36,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/phoneNumber"
         android:gravity="center_horizontal"
         android:textSize="30dp"
@@ -45,7 +45,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/categorieCartes"
         android:text="Mes cartes de réduction"
         android:gravity="center_horizontal"
