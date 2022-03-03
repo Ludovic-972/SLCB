@@ -115,6 +115,8 @@ public class User {
             st.executeUpdate(req);
         }catch(SQLException e){
             e.printStackTrace();
+        }finally {
+            JDBCUtils.close(connection);
         }
 
         try {
@@ -123,7 +125,6 @@ public class User {
             e.printStackTrace();
         }
 
-        Log.d("ExtDB_addUser",user.toString());
         return user;
     }
 

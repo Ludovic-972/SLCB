@@ -50,7 +50,7 @@ public class UserRegistration extends Fragment {
         Button register = root.findViewById(R.id.inscrire);
         register.setOnClickListener(view -> {
             if (!noEmptyInputs()){
-                Toast.makeText(getContext(), "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
             }else{
                 Thread registration = new Thread(){
 
@@ -70,7 +70,7 @@ public class UserRegistration extends Fragment {
                 try {
                     registration.join();
                     if (user != null) {
-                        Toast.makeText(getContext(), "Bienvenue chez nous !", Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), "Bienvenue chez nous !", Toast.LENGTH_LONG).show();
                         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -91,7 +91,7 @@ public class UserRegistration extends Fragment {
                         mdp.setText("");
                         MainFragmentReplacement.Replace(requireActivity().getSupportFragmentManager(), new Home());
                     }else
-                        Toast.makeText(getContext(), "Inscription impossible,cet email est déjà utilisée.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Inscription impossible,cet email est déjà utilisée.", Toast.LENGTH_SHORT).show();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -117,7 +117,7 @@ public class UserRegistration extends Fragment {
                         anniversaire.setText(date);
                     }
                 };
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
                         android.R.style.Theme_Holo_Light_Dialog_NoActionBar
                         ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();

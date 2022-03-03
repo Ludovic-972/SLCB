@@ -53,13 +53,6 @@ public class Home extends Fragment {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
-        // Reset shared preferences
-        //preferences.edit().clear().commit();
-
-        /*Reset database
-        UserBD userBD = new UserBD(getContext());
-        userBD.removeAllUsers();
-         */
 
         /* Détecter la position avec le GPS et entrer dans  departure Town*/
         departureTown = root.findViewById(R.id.departureTown);
@@ -81,8 +74,6 @@ public class Home extends Fragment {
             }
         };
         townsRecuperation.start();
-
-
         try {
             townsRecuperation.join() ;
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -150,7 +141,7 @@ public class Home extends Fragment {
                 date+= year;
                 tripDay.setText(date);
             };
-            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
                     android.R.style.Theme_Holo_Light_Dialog_NoActionBar
                     ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
             datePickerDialog.show();
