@@ -15,11 +15,10 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_marginVertical="5dp"
-        android:background="@color/white"
         android:src="@drawable/research"
         android:padding="10dp"
         android:scaleType="fitCenter"
-         />
+        android:background="@drawable/ripple"/>
 
     <Button
         android:id="@+id/ticketsPageButton"
@@ -27,7 +26,9 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:text="Mes Billets\nSLCB"
-        android:layout_marginHorizontal="5dp"/>
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="5dp"
+        android:background="@drawable/ripple"/>
 
     <ImageButton
         android:id="@+id/accountPageButton"
@@ -35,9 +36,9 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_marginVertical="5dp"
-        android:background="@color/white"
         android:src="@drawable/account"
         android:padding="10dp"
         android:scaleType="fitCenter"
+        android:background="@drawable/ripple"
          />
 </LinearLayout>

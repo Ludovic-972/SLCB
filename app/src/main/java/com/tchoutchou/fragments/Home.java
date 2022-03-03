@@ -110,7 +110,7 @@ public class Home extends Fragment {
         goToRides.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(notEmptyInputs()) {
+                if(noEmptyInputs()) {
                     if (towns.contains(departureTown.getText().toString()) && towns.contains(arrivalTown.getText().toString())) {
                         Intent intent = new Intent(requireActivity(), TripActivity.class);
 
@@ -130,7 +130,7 @@ public class Home extends Fragment {
                 }
             }
 
-            private boolean notEmptyInputs() {
+            private boolean noEmptyInputs() {
                 return !departureTown.getText().toString().equals("")
                         && !arrivalTown.getText().toString().equals("")
                         && !departureHour.getText().toString().equals("")

@@ -7,12 +7,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.tchoutchou.R;
+import com.tchoutchou.fragments.Home;
+import com.tchoutchou.util.MainFragmentReplacement;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -35,6 +39,8 @@ public class UserAccount extends Fragment {
         View root = inflater.inflate(R.layout.fragment_user_account, container, false);
         SharedPreferences preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
 
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+
         TextView infos = root.findViewById(R.id.informations);
         String userName = preferences.getString("lastname", "");
         String userFirstname = preferences.getString("firstname", "");
@@ -52,6 +58,12 @@ public class UserAccount extends Fragment {
         TextView tel = root.findViewById(R.id.phoneNumber);
         String userPhone = preferences.getString("phoneNumber", "");
         tel.setText("Numero de téléphone : " + userPhone);
+
+        Button deconnection = root.findViewById(R.id.deconnection);
+        deconnection.setOnClickListener(view -> {
+            preferences.edit().clear().apply();
+            MainFragmentReplacement.Replace(fragmentManager,new Home());
+        });
 
         return root;
     }
