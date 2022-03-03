@@ -28,7 +28,10 @@ import java.util.concurrent.TimeUnit;
 
 public class TripActivity extends AppCompatActivity {
 
+
+    Bundle tripsInfos;
     private List<Trip> trips = new ArrayList<>();
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -36,17 +39,9 @@ public class TripActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rides);
 
-        getSupportActionBar().show();
-        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setCustomView(R.layout.trip_action_bar);
+        tripsInfos = getIntent().getExtras();
+        initActionBar();
 
-        View view = getSupportActionBar().getCustomView();
-        Bundle tripsInfos = getIntent().getExtras();
-
-        TextView name = view.findViewById(R.id.tripDay);
-        name.setText(String.join("/", tripsInfos.getString("tripDay").split("-")));
 
         ListView tripListView = findViewById(R.id.trips);
 
@@ -59,10 +54,35 @@ public class TripActivity extends AppCompatActivity {
         tripsRecuperation.start();
         try {
             tripsRecuperation.join();
-            tripListView.setAdapter(new TripListAdapter(this, trips));
+            tripListView.setAdapter(new TripListAdapter(this, trips,getResources()));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void initActionBar(){
+        getSupportActionBar().show();
+        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.trip_action_bar);
+
+        View view = getSupportActionBar().getCustomView();
+
+        TextView tripDay = view.findViewById(R.id.tripDay);
+
+        String sb = getString(R.string.trip_action_bar_text) +
+                "\n" +
+                String.join("/", tripsInfos.getString("tripDay").split("-")) +
+                " " +
+                getString(R.string.trip_action_bar_at) +
+                " " +
+                tripsInfos.getString("departureHour");
+        tripDay.setText(sb);
+
+
 
     }
 

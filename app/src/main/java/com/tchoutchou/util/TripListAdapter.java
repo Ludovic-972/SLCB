@@ -1,13 +1,20 @@
 package com.tchoutchou.util;
 
+import android.app.ActionBar;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tchoutchou.R;
@@ -19,13 +26,16 @@ public class TripListAdapter extends BaseAdapter {
 
     private Context context;
     private List<Trip> tripList;
-    private  LayoutInflater layoutInflater;
+    private LayoutInflater layoutInflater;
+    private Resources resources;
 
 
-    public TripListAdapter(Context context, List<Trip> listData) {
+    public TripListAdapter(Context context, List<Trip> listData, Resources r) {
         this.context = context;
         this.tripList = listData;
         this.layoutInflater = LayoutInflater.from(context);
+        this.resources = r;
+
     }
 
     @Override
@@ -49,6 +59,7 @@ public class TripListAdapter extends BaseAdapter {
         if (view == null) {
             view = layoutInflater.inflate(R.layout.trip_list_layout, null);
             holder = new TripViewHolder();
+            holder.tripDay = view.findViewById(R.id.tripDay);
             holder.departureHour = view.findViewById(R.id.departureHour);
             holder.departureTown =  view.findViewById(R.id.departureTown);
             holder.arrivalHour =  view.findViewById(R.id.arrivalHour);
@@ -62,15 +73,41 @@ public class TripListAdapter extends BaseAdapter {
 
         Trip trip = this.tripList.get(i);
 
-        holder.departureHour.setText(trip.getDepartureHour().substring(0,5));
+        //holder.tripDay.setText(trip.getTripDay());
+        holder.departureHour.setText(trip.getDepartureHour());
         holder.departureTown.setText(trip.getDepartureTown());
-        holder.arrivalHour.setText(trip.getArrivalHour().substring(0,5));
+        holder.arrivalHour.setText(trip.getArrivalHour());
         holder.arrivalTown.setText(trip.getArrivalTown());
-        String price = Float.toString(trip.getPrice())+"€";
+        String price = trip.getPrice() +"€";
         holder.price.setText(price);
-        String tripTime = "~"+Integer.toString(trip.getTripTime())+"min";
+        String tripTime = "~"+ trip.getTripTime() +"min";
         holder.tripTime.setText(tripTime);
 
+
+        view.setOnClickListener(view1 -> {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
+
+            builder.setCancelable(false)
+                    .setView(layoutInflater.inflate(R.layout.trip_infos,null));
+
+
+
+            AlertDialog alert = builder.create();
+
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(alert.getWindow().getAttributes());
+            lp.width = WindowManager.LayoutParams.WRAP_CONTENT ;
+            lp.height =  WindowManager.LayoutParams.WRAP_CONTENT ;
+            alert.show();
+            alert.getWindow().setAttributes(lp);
+
+            TextView title = alert.findViewById(R.id.title);
+            title.setText(trip.getDepartureTown()+" -> "+trip.getArrivalTown());
+
+            Button close = alert.findViewById(R.id.closingButton);
+            close.setOnClickListener(view2 -> alert.dismiss());
+        });
 
 
         return view;
@@ -78,6 +115,7 @@ public class TripListAdapter extends BaseAdapter {
 
     static class TripViewHolder{
         TextView
+                tripDay,
                 departureHour,
                 departureTown,
                 arrivalHour,

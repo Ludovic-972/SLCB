@@ -7,5 +7,6 @@
         android:id="@+id/tripDay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Coucou" />
+        android:layout_centerInParent="true"
+        android:textSize="18sp" />
 </RelativeLayout>

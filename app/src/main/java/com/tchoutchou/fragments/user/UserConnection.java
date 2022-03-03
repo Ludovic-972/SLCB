@@ -89,7 +89,7 @@ public class UserConnection extends Fragment {
                     e.printStackTrace();
                 }
             } else
-                Toast.makeText(getContext(), "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
 
 
         });

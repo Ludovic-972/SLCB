@@ -123,7 +123,6 @@ public class User {
             e.printStackTrace();
         }
 
-        Log.d("ExtDB_addUser",user.toString());
         return user;
     }
 

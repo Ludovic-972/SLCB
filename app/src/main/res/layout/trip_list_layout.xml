@@ -3,6 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/tripDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/price"
+        android:layout_alignParentEnd="true"
+        android:text="TextView" />
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,7 +22,6 @@
             android:layout_width="85dp"
             android:layout_height="55dp"
             android:textSize="15sp"
-            android:layout_marginBottom="10dp"
             android:gravity="center"
             android:layout_alignParentStart="true"
             android:text="00:00" />
@@ -23,7 +30,7 @@
             android:id="@+id/departureTown"
             android:layout_width="250dp"
             android:layout_height="55dp"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:gravity="center_vertical"
             android:layout_toEndOf="@id/departureHour"
             android:text="TextView" />
@@ -42,11 +49,12 @@
             android:id="@+id/arrivalTown"
             android:layout_width="250dp"
             android:layout_height="55dp"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:gravity="center_vertical"
             android:layout_alignBottom="@id/arrivalHour"
             android:layout_toEndOf="@id/arrivalHour"
             android:text="TextView" />
+
     </RelativeLayout>
 
     <TextView
@@ -69,4 +77,6 @@
         android:layout_marginTop="20dp"
         android:text="X min"
         android:textSize="12sp" />
+
+
 </RelativeLayout>
