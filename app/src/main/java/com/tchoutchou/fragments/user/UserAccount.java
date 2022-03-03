@@ -14,6 +14,9 @@ import androidx.fragment.app.Fragment;
 
 import com.tchoutchou.R;
 
+import java.time.LocalDate;
+import java.time.Month;
+
 public class UserAccount extends Fragment {
 
     public UserAccount(){}
@@ -34,8 +37,12 @@ public class UserAccount extends Fragment {
         TextView infos = root.findViewById(R.id.informations);
         String userName = preferences.getString("lastname", "");
         String userFirstname = preferences.getString("firstname", "");
-        String userBirthday = preferences.getString("birthdate", "");
-        infos.setText(userFirstname + " " + userName + ", né le " + userBirthday);
+        String dateNaissance = root.findViewById(R.id.anniversaire).toString();
+        String[] detailDate = dateNaissance.split("-");
+        LocalDate dateOfBirth = LocalDate.of(Integer.parseInt(detailDate[2]), Month.valueOf(detailDate[1]), Integer.parseInt(detailDate[0]));
+        LocalDate now = LocalDate.now();
+        int age = dateOfBirth.until(now).getYears();
+        infos.setText(userFirstname + " " + userName + ", " + age + " ans");
 
         TextView adresseMail = root.findViewById(R.id.adresseMail);
         String userMail = preferences.getString("mail", "");
