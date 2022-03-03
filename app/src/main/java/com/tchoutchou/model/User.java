@@ -115,6 +115,8 @@ public class User {
             st.executeUpdate(req);
         }catch(SQLException e){
             e.printStackTrace();
+        }finally {
+            JDBCUtils.close(connection);
         }
 
         try {

@@ -1,10 +1,6 @@
 package com.tchoutchou.util;
 
-import android.app.ActionBar;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,26 +11,26 @@ import android.widget.TextView;
 
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.tchoutchou.R;
 import com.tchoutchou.model.Trip;
+import com.tchoutchou.model.UserTrips;
 
 import java.util.List;
 
 public class TripListAdapter extends BaseAdapter {
 
-    private Context context;
-    private List<Trip> tripList;
-    private LayoutInflater layoutInflater;
-    private Resources resources;
+    private final Context context;
+    private final List<Trip> tripList;
+    private final LayoutInflater layoutInflater;
+    private int user_id;
+    private int buyedTripId;
 
-
-    public TripListAdapter(Context context, List<Trip> listData, Resources r) {
+    public TripListAdapter(Context context, List<Trip> listData,int user_id) {
         this.context = context;
         this.tripList = listData;
         this.layoutInflater = LayoutInflater.from(context);
-        this.resources = r;
+        this.user_id = user_id;
 
     }
 
@@ -56,6 +52,7 @@ public class TripListAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         TripViewHolder holder;
+        buyedTripId = 0;
         if (view == null) {
             view = layoutInflater.inflate(R.layout.trip_list_layout, null);
             holder = new TripViewHolder();
@@ -106,11 +103,36 @@ public class TripListAdapter extends BaseAdapter {
             title.setText(trip.getDepartureTown()+" -> "+trip.getArrivalTown());
 
             Button close = alert.findViewById(R.id.closingButton);
-            close.setOnClickListener(view2 -> alert.dismiss());
+            close.setOnClickListener(v -> alert.dismiss());
+
+            Button buyButton = alert.findViewById(R.id.buyButton);
+
+            buyButton.setOnClickListener(v -> {
+                Thread buy = new Thread(){
+                    @Override
+                    public void run(){
+                        UserTrips.addUserTrip(trip.getTripId(),user_id);
+                    }
+                };
+
+                buy.start();
+                try {
+                    buy.join();
+                    this.buyedTripId = trip.getTripId();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+
+                }
+                alert.dismiss();
+            });
         });
 
 
         return view;
+    }
+
+    public int getBuyedTripId(){
+        return buyedTripId;
     }
 
     static class TripViewHolder{
