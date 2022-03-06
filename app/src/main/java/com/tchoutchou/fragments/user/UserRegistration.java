@@ -52,7 +52,7 @@ public class UserRegistration extends Fragment {
             if (!verifyInputs()){
                 Toast.makeText(requireContext(), "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
             }else {
-                if (!validMail()) {
+                if (validMail()) {
                     Thread registration = new Thread() {
 
                         @Override

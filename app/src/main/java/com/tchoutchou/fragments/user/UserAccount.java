@@ -45,11 +45,7 @@ public class UserAccount extends Fragment {
         String userName = preferences.getString("lastname", "");
         String userFirstname = preferences.getString("firstname", "");
         String dateNaissance = preferences.getString("birthdate", "");
-        String[] detailDate = dateNaissance.split("-");
-        LocalDate dateOfBirth = LocalDate.of(Integer.parseInt(detailDate[2]), Month.valueOf(detailDate[1]), Integer.parseInt(detailDate[0]));
-        LocalDate now = LocalDate.now();
-        age = dateOfBirth.until(now).getYears();
-        infos.setText(userFirstname + " " + userName + ", " + age + " ans");
+        infos.setText(userFirstname + " " + userName + ", né le " + dateNaissance);
 
         TextView adresseMail = root.findViewById(R.id.adresseMail);
         String userMail = preferences.getString("mail", "");
