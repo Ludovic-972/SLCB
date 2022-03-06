@@ -4,4 +4,7 @@
     <string name="hello_blank_fragment">Coucou fragment vide</string>
     <string name="trip_action_bar_text">Bus disponibles à partir du</string>
     <string name="at"> à </string>
+    <string name="the">le</string>
+    <string name="show_location_1">Vous êtes actuellement à</string>
+    <string name="show_location_2">Voulez-vous cherchez un billet depuis votre emplacement ?</string>
 </resources>

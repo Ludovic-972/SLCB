@@ -1,11 +1,15 @@
 package com.tchoutchou.util;
 
 import android.content.Context;
+import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 
 import com.tchoutchou.R;
 import com.tchoutchou.model.Trip;
@@ -40,16 +44,21 @@ public class TripListAdapter extends BaseAdapter {
         return i;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         if (view == null) {
-            view = layoutInflater.inflate(R.layout.trip_list_layout, null);
+            view = layoutInflater.inflate(R.layout.trip_list_item, null);
         }
 
         Trip trip = tripList.get(i);
 
+        String[] tripDate = trip.getTripDay().split("-");
+        String tmp = tripDate[0];
+        tripDate[0] = tripDate[2];
+        tripDate[2] = tmp;
 
-        ((TextView) view.findViewById(R.id.tripDay)).setText(trip.getTripDay());
+        ((TextView) view.findViewById(R.id.tripDate)).setText(String.join("/",tripDate));
         ((TextView) view.findViewById(R.id.departureHour)).setText(trip.getDepartureHour());
         ((TextView) view.findViewById(R.id.departureTown)).setText(trip.getDepartureTown());
         ((TextView) view.findViewById(R.id.arrivalHour)).setText(trip.getArrivalHour());

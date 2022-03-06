@@ -7,36 +7,41 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.tchoutchou.fragments.Home;
+import com.tchoutchou.fragments.user.UserTickets;
+import com.tchoutchou.model.Trip;
 import com.tchoutchou.util.MainFragmentReplacement;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private static boolean appIsOpen = false;
     private Handler handler;
     private boolean doubleBackToExitPressedOnce = false;
-
+    private FragmentManager fm;
+    Fragment mainFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         View loadingScreen = getLayoutInflater().inflate(R.layout.loading_screen, null);
-        View main = getLayoutInflater().inflate(R.layout.activity_main, null);
+        View mainView = getLayoutInflater().inflate(R.layout.activity_main, null);
 
-        getSupportActionBar().hide();
-            setContentView(loadingScreen);
-            handler = new Handler();
+        setContentView(loadingScreen);
+        handler = new Handler();
         if (!appIsOpen) {
-            Runnable change = () -> setContentView(main);
+            Runnable change = () -> setContentView(mainView);
 
             Runnable loading = () -> {
                 try {
-                    Thread.sleep(7000);
+                    Thread.sleep(5000);
+                    Trip.clean();
                     handler.post(change);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -47,16 +52,23 @@ public class MainActivity extends AppCompatActivity {
             new Thread(loading).start();
             appIsOpen = true;
         }else{
-            setContentView(main);
+            setContentView(mainView);
+        }
+
+        fm = getSupportFragmentManager();
+        mainFragment = fm.findFragmentById(R.id.main);
+
+        if (mainFragment instanceof UserTickets){
+            getSupportActionBar().show();
+            getSupportActionBar().setTitle("Vos billets");
+        }else{
+            getSupportActionBar().hide();
         }
     }
 
     @Override
     public void onBackPressed() {
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment main = fm.findFragmentById(R.id.main);
-
-        if(main instanceof Home) {
+        if(mainFragment instanceof Home) {
             if (doubleBackToExitPressedOnce) {
                 finish();
             }
@@ -74,4 +86,6 @@ public class MainActivity extends AppCompatActivity {
             MainFragmentReplacement.replace(fm,new Home());
          }
     }
+
+
 }

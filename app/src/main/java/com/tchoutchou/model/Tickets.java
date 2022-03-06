@@ -67,7 +67,6 @@ public class Tickets {
         String req = "DELETE FROM tickets WHERE"+
                 " user_id = "+userId+
                 " AND trip_id = "+tripId;
-        Log.d("ExtDb",req);
         Statement st;
         try {
             st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);

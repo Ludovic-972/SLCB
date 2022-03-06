@@ -2,7 +2,6 @@ package com.tchoutchou.model;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -77,7 +76,7 @@ public class Trip {
                 "WHERE departureTime >=\""+JDBCUtils.dateToSQLFormat((String) infos.get("tripDay"))+" "+infos.get("departureHour")+"\""+
                 " AND departureTown=\""+infos.get("departureTown")+"\""+
                 " AND arrivalTown=\""+infos.get("arrivalTown")+"\""+
-                " ORDER BY departureTime ASC";
+                " ORDER BY DATE(departureTime) ASC";
         Connection connection = JDBCUtils.getConnection();
 
 
@@ -115,7 +114,7 @@ public class Trip {
                 "price,TIMESTAMPDIFF(MINUTE,departureTime,arrivalTime) " +
                 "FROM trips T,tickets U " +
                 "WHERE T.trip_id = U.trip_id AND U.user_id =" +userId+
-                " ORDER BY T.trip_id ASC";
+                " ORDER BY DATE(departureTime) ASC";
         Connection connection = JDBCUtils.getConnection();
 
         try {
@@ -143,5 +142,20 @@ public class Trip {
         }
 
         return tripList;
+    }
+
+
+    public static void clean(){
+        Connection connection = JDBCUtils.getConnection();
+        String req = "DELETE T,U FROM trips T JOIN tickets U ON U.trip_id = T.trip_id WHERE T.arrivalTime < NOW()";
+        Statement st;
+        try {
+            st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            st.executeUpdate(req);
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            JDBCUtils.close(connection);
+        }
     }
 }
