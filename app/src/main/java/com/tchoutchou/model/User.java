@@ -134,7 +134,6 @@ public class User {
         User res = null;
         for(User user : users){
             if (user.getMail().equals(mail) && user.getPassword().equals(password)){
-                Log.d("ExtDB",user.toString());
                 res = new User();
                 res.setId(user.getId());
                 res.setFirstname(user.getFirstname());

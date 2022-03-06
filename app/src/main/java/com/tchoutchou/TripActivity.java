@@ -7,24 +7,23 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.tchoutchou.model.Trip;
 import com.tchoutchou.model.Tickets;
+import com.tchoutchou.model.Trip;
 import com.tchoutchou.util.TripListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TripActivity extends AppCompatActivity{
 
@@ -57,7 +56,7 @@ public class TripActivity extends AppCompatActivity{
         tripsRecuperation.start();
         try {
             tripsRecuperation.join();
-            TripListAdapter adapter = new TripListAdapter(getApplicationContext(),tripList);
+            TripListAdapter adapter = new TripListAdapter(TripActivity.this,tripList);
             tripListView.setAdapter(adapter);
 
             tripListView.setOnItemClickListener((adapterView, view, position, l) -> {
@@ -74,16 +73,16 @@ public class TripActivity extends AppCompatActivity{
                     try{
                         existenceOfTicket.join();
                         if(!ticketAlreadyExists) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                            AlertDialog.Builder builder = new AlertDialog.Builder(TripActivity.this);
 
                             Trip trip = tripList.get(position);
 
-                            TextView title = new TextView(getApplicationContext());
+                            TextView title = new TextView(TripActivity.this);
                             String titleText = trip.getDepartureTown()
                                     + " -> "
                                     + trip.getArrivalTown() + "\n"
                                     + "le "
-                                    + trip.getTripDay() + " "
+                                    + String.join("/", tripsInfos.getString("tripDay").split("-")) + " "
                                     + getString(R.string.at) + " "
                                     + trip.getTripTime();
 
@@ -101,13 +100,14 @@ public class TripActivity extends AppCompatActivity{
                                         Thread buy = new Thread() {
                                             @Override
                                             public void run() {
-                                                Tickets.addTickets(trip.getTripId(), user_id);
+                                                Tickets.addTickets(user_id,trip.getTripId());
                                             }
                                         };
                                         buy.start();
                                         try {
                                             buy.join();
                                             dialogInterface.dismiss();
+                                            Toast.makeText(TripActivity.this,"Votre achat à été réalisé.",Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(TripActivity.this, MainActivity.class);
                                             startActivity(intent);
                                             finish();
@@ -122,7 +122,7 @@ public class TripActivity extends AppCompatActivity{
                             alert.show();
                         }
                     }catch(InterruptedException e){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                        AlertDialog.Builder builder = new AlertDialog.Builder(TripActivity.this);
 
                         builder.setTitle("Achat Impossible")
                                 .setCancelable(false)
@@ -142,7 +142,7 @@ public class TripActivity extends AppCompatActivity{
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void initActionBar(){
-        getSupportActionBar().show();
+        Objects.requireNonNull(getSupportActionBar()).show();
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

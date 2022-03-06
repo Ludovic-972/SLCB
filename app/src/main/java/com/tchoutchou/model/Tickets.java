@@ -59,7 +59,6 @@ public class Tickets {
     }
 
     public static boolean ticketExists(int userId,int tripId){
-        Connection connection = JDBCUtils.getConnection();
         return getAllUserTickets(userId).contains(tripId);
     }
 
@@ -67,8 +66,8 @@ public class Tickets {
         Connection connection = JDBCUtils.getConnection();
         String req = "DELETE FROM tickets WHERE"+
                 " user_id = "+userId+
-                " trip_id = "+tripId;
-
+                " AND trip_id = "+tripId;
+        Log.d("ExtDb",req);
         Statement st;
         try {
             st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);

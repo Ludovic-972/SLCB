@@ -113,10 +113,9 @@ public class Trip {
         List<Trip> tripList = new ArrayList<>();
         String req = "SELECT T.trip_id,DATE(departureTime),DATE_FORMAT(departureTime,\"%H:%i\"),departureTown,DATE_FORMAT(arrivalTime,\"%H:%i\"),arrivalTown," +
                 "price,TIMESTAMPDIFF(MINUTE,departureTime,arrivalTime) " +
-                "FROM trips T,userTrips U " +
+                "FROM trips T,tickets U " +
                 "WHERE T.trip_id = U.trip_id AND U.user_id =" +userId+
                 " ORDER BY T.trip_id ASC";
-        Log.d("ExtDb",req);
         Connection connection = JDBCUtils.getConnection();
 
         try {

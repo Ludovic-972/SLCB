@@ -10,10 +10,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
@@ -27,15 +26,10 @@ import com.tchoutchou.model.Trip;
 import com.tchoutchou.util.MainFragmentReplacement;
 import com.tchoutchou.util.TripListAdapter;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 
 public class UserTickets extends Fragment {
@@ -60,7 +54,6 @@ public class UserTickets extends Fragment {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
 
         int userId = preferences.getInt("userId",0);
-        Log.d("AZERTY",String.valueOf(userId));
         if (userId == 0){
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle("Vous n'êtes pas connecté")
@@ -97,8 +90,6 @@ public class UserTickets extends Fragment {
                     Trip trip = tripList.get(position);
                     String tripDateTime = trip.getTripDay()+" "+trip.getDepartureHour();
 
-
-                    StringBuilder remainingTimeText = new StringBuilder();
                     AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
                     String titleText = trip.getDepartureTown()
@@ -135,6 +126,7 @@ public class UserTickets extends Fragment {
 
                             try {
                                 ticketDeletion.join();
+                                Toast.makeText(requireContext(), "Voyage supprimé", Toast.LENGTH_SHORT).show();
                                 MainFragmentReplacement.replace(
                                         requireActivity().getSupportFragmentManager(),
                                         new UserTickets());

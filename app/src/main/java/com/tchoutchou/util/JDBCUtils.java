@@ -23,8 +23,9 @@ public class JDBCUtils {
 
     public static void close(Connection connection){
         try {
+            assert connection != null;
             connection.close();
-        } catch (SQLException e) {
+        } catch (SQLException |AssertionError e) {
             e.printStackTrace();
         }
     }
