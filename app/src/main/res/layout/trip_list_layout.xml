@@ -3,15 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tripDay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/price"
-        android:layout_alignParentEnd="true"
-        android:text="TextView" />
-
     <RelativeLayout
+        android:id="@+id/tripInfosBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -58,14 +51,26 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/price"
-        android:layout_width="70dp"
-        android:layout_height="73dp"
+        android:id="@+id/tripDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/price"
         android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@id/tripInfosBox"
+        android:textSize="18sp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="5dp"
         android:gravity="center"
         android:text="X €"
-        android:textSize="25sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/tripTime"
@@ -74,9 +79,10 @@
         android:layout_below="@id/price"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_alignBottom="@id/tripInfosBox"
         android:text="X min"
-        android:textSize="12sp" />
+        android:layout_marginTop="15dp"
+        android:textSize="15sp" />
 
 
 </RelativeLayout>

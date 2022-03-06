@@ -2,5 +2,5 @@
 <resources>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="trip_action_bar_text">Bus availables from</string>
-    <string name="trip_action_bar_at">" at "</string>
+    <string name="at">" at "</string>
 </resources>

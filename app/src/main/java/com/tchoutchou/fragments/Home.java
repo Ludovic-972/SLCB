@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import com.tchoutchou.R;
 import com.tchoutchou.TripActivity;
 import com.tchoutchou.model.Towns;
+import com.tchoutchou.util.MainFragmentReplacement;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,8 +42,6 @@ public class Home extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    AutoCompleteTextView departureTown, arrivalTown;
-    EditText departureHour, tripDay;
 
     SharedPreferences preferences;
     private List<String> towns = new ArrayList<>();
@@ -54,10 +54,10 @@ public class Home extends Fragment {
 
         preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
 
-        /* Détecter la position avec le GPS et entrer dans  departure Town*/
-        departureTown = root.findViewById(R.id.departureTown);
-        arrivalTown = root.findViewById(R.id.arrivalTown);
-        departureHour = root.findViewById(R.id.departureHour);
+        EditText tripDay = root.findViewById(R.id.tripDay);
+        EditText departureHour = root.findViewById(R.id.departureHour);
+        AutoCompleteTextView departureTown = root.findViewById(R.id.departureTown);
+        AutoCompleteTextView arrivalTown = root.findViewById(R.id.arrivalTown);
         Button goToRides = root.findViewById(R.id.toRides);
 
         TextView greetings = root.findViewById(R.id.greetings);
@@ -87,6 +87,23 @@ public class Home extends Fragment {
             e.printStackTrace();
         }
 
+        tripDay.setOnClickListener(view -> {
+
+            Calendar c = Calendar.getInstance();
+
+            DatePickerDialog.OnDateSetListener dateSetListener = (view1, year, monthOfYear, dayOfMonth) -> {
+                String date = "";
+                date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
+                date+= (monthOfYear<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
+                date+= year;
+                tripDay.setText(date);
+            };
+            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+                    android.R.style.Theme_Holo_Light_Dialog_NoActionBar
+                    ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.show();
+        });
+
         departureHour.setOnClickListener(view -> {
             Calendar calendar = Calendar.getInstance();
             TimePickerDialog timePickerDialog = new TimePickerDialog(
@@ -97,6 +114,18 @@ public class Home extends Fragment {
                     true);
             timePickerDialog.show();
         });
+
+        departureTown.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    arrivalTown.setSelection(0);
+                    return true;
+                }
+                return false;
+            }
+        });
+        
 
         goToRides.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,31 +158,16 @@ public class Home extends Fragment {
             }
         });
 
-        tripDay = root.findViewById(R.id.tripDay);
-        tripDay.setOnClickListener(view -> {
-
-            Calendar c = Calendar.getInstance();
-
-            DatePickerDialog.OnDateSetListener dateSetListener = (view1, year, monthOfYear, dayOfMonth) -> {
-                String date = "";
-                date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
-                date+= (monthOfYear<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
-                date+= year;
-                tripDay.setText(date);
-            };
-            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
-                    android.R.style.Theme_Holo_Light_Dialog_NoActionBar
-                    ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
-            datePickerDialog.show();
-        });
 
 
         Button offers = root.findViewById(R.id.offers);
-        if (!preferences.getString("mail", "").equals("")){
+        if (preferences.getInt("userId", 0) != 0){
             offers.setVisibility(View.VISIBLE);
+            /*offers.setOnClickListener(view -> MainFragmentReplacement.Replace(
+                    requireActivity().getSupportFragmentManager(),
+                    new Offers()
+            ));*/
         }
-
-
         return root;
     }
 

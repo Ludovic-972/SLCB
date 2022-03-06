@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">SLCB</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Coucou fragment vide</string>
     <string name="trip_action_bar_text">Bus disponibles à partir du</string>
-    <string name="trip_action_bar_at"> à </string>
+    <string name="at"> à </string>
 </resources>

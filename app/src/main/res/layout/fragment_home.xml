@@ -88,7 +88,7 @@ tools:context=".fragments.Home">
 
     <AutoCompleteTextView
         android:id="@+id/departureTown"
-        android:layout_width="200dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/tripDay"
         android:layout_marginTop="5dp"
@@ -96,20 +96,6 @@ tools:context=".fragments.Home">
         android:hint="Ville de départ"
         android:inputType="textCapWords"
         android:minHeight="48dp" />
-
-    <ImageButton
-        android:id="@+id/departureTownLocalisation"
-        android:layout_width="53dp"
-        android:layout_height="48dp"
-        android:layout_below="@id/departureHour"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="20dp"
-        android:layout_toEndOf="@id/departureTown"
-        android:background="@drawable/ripple"
-        android:padding="10dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/map_icon" />
 
     <TextView
         android:id="@+id/to"
@@ -123,30 +109,17 @@ tools:context=".fragments.Home">
 
     <AutoCompleteTextView
         android:id="@+id/arrivalTown"
-        android:layout_width="200dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/departureTown"
         android:layout_marginHorizontal="30dp"
-        android:layout_marginStart="0dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginTop="2dp"
         android:layout_toEndOf="@+id/to"
         android:hint="Ville d'arrivée"
         android:inputType="textCapWords"
         android:minHeight="48dp" />
 
-    <ImageButton
-        android:id="@+id/arrivalTownLocalisation"
-        android:layout_width="53dp"
-        android:layout_height="48dp"
-        android:layout_below="@id/departureTownLocalisation"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="20dp"
-        android:layout_toEndOf="@id/arrivalTown"
-        android:background="@drawable/ripple"
-        android:padding="10dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/map_icon" />
 
     <Button
     android:id="@+id/toRides"
