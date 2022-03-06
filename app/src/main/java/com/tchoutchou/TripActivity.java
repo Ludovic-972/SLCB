@@ -81,10 +81,10 @@ public class TripActivity extends AppCompatActivity{
                             String titleText = trip.getDepartureTown()
                                     + " -> "
                                     + trip.getArrivalTown() + "\n"
-                                    + "le "
+                                    + getString(R.string.the)+" "
                                     + String.join("/", tripsInfos.getString("tripDay").split("-")) + " "
                                     + getString(R.string.at) + " "
-                                    + trip.getTripTime();
+                                    + trip.getDepartureHour();
 
                             title.setText(titleText);
                             title.setBackgroundColor(Color.DKGRAY);
@@ -113,25 +113,24 @@ public class TripActivity extends AppCompatActivity{
                                             finish();
                                         }catch (InterruptedException e) {
                                             e.printStackTrace();
-
                                         }
                                     })
                                     .setNegativeButton("Non", (dialogInterface, i) -> dialogInterface.dismiss());
 
                             AlertDialog alert = builder.create();
                             alert.show();
+                        }else{
+                            AlertDialog.Builder builder = new AlertDialog.Builder(TripActivity.this);
+
+                            builder.setTitle("Achat Impossible")
+                                    .setCancelable(false)
+                                    .setMessage("Vous avez déjà achetez ce ticket")
+                                    .setNeutralButton("Ok",(dialog,i2) -> dialog.dismiss());
+
+                            AlertDialog alert = builder.create();
+                            alert.show();
                         }
-                    }catch(InterruptedException e){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(TripActivity.this);
-
-                        builder.setTitle("Achat Impossible")
-                                .setCancelable(false)
-                                .setMessage("Vous avez déjà achetez ce ticket")
-                                .setNeutralButton("Ok",(dialog,i2) -> dialog.dismiss());
-
-                        AlertDialog alert = builder.create();
-                        alert.show();
-                    }
+                    }catch(InterruptedException ignored){}
                 }
             });
         } catch (InterruptedException e) {
@@ -141,7 +140,7 @@ public class TripActivity extends AppCompatActivity{
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void initActionBar(){
+    private void initActionBar(){
         Objects.requireNonNull(getSupportActionBar()).show();
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
@@ -164,7 +163,6 @@ public class TripActivity extends AppCompatActivity{
 
 
     }
-
 
 
 }
