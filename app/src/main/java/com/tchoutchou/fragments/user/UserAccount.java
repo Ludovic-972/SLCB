@@ -19,7 +19,6 @@ import com.tchoutchou.fragments.Home;
 import com.tchoutchou.util.MainFragmentReplacement;
 
 import java.time.LocalDate;
-import java.time.Month;
 
 public class UserAccount extends Fragment {
 
@@ -45,7 +44,13 @@ public class UserAccount extends Fragment {
         String userName = preferences.getString("lastname", "");
         String userFirstname = preferences.getString("firstname", "");
         String dateNaissance = preferences.getString("birthdate", "");
-        infos.setText(userFirstname + " " + userName + ", né le " + dateNaissance);
+
+        String[] date = dateNaissance.split("-");
+        LocalDate dateOfBirth = LocalDate.of(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]));
+        LocalDate now = LocalDate.now();
+        age = dateOfBirth.until(now).getYears();
+
+        infos.setText(userFirstname + " " + userName + ", " + age + " ans");
 
         TextView adresseMail = root.findViewById(R.id.adresseMail);
         String userMail = preferences.getString("mail", "");
@@ -64,8 +69,6 @@ public class UserAccount extends Fragment {
         return root;
     }
 
-    public static int getAge() {
-        return age;
-    }
+    static public int getAge() {return age;}
 
 }

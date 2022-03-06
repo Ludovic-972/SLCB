@@ -12,6 +12,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.tchoutchou.R;
 import com.tchoutchou.fragments.user.UserAccount;
@@ -31,20 +32,17 @@ public class Offers extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_user_registration, container, false);
+        View root = inflater.inflate(R.layout.fragment_offers, container, false);
         SharedPreferences preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
 
-        this.boutonSave = root.findViewById(R.id.boutonSave);
-        this.boutonJeunes = root.findViewById(R.id.boutonJeunes);
-        this.boutonVieux = root.findViewById(R.id.boutonVieux);
-        this.radioGroup = root.findViewById(R.id.listeRadioButton);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
 
-        boutonSave.setOnClickListener(new Button.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                doSave(root);
-            };
-        });
+        boutonSave = root.findViewById(R.id.boutonSave);
+        boutonJeunes = root.findViewById(R.id.boutonJeunes);
+        boutonVieux = root.findViewById(R.id.boutonVieux);
+        radioGroup = root.findViewById(R.id.listeRadioButton);
+
+        boutonSave.setOnClickListener(v -> doSave(root));
 
         return root;
     }
@@ -55,7 +53,7 @@ public class Offers extends Fragment {
         RadioButton which = (RadioButton) root.findViewById(verify);
 
         int age = UserAccount.getAge();
-        if(age>= 18 && age <=25 && which==boutonJeunes) {
+        if(age>=18 && age<=25 && which==boutonJeunes) {
             cartes.setText("Carte jeunes");
         } else if(age>=60 && which==boutonVieux) {
             cartes.setText("Carte sénior");

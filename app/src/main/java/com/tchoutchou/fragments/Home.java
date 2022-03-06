@@ -163,10 +163,10 @@ public class Home extends Fragment {
         Button offers = root.findViewById(R.id.offers);
         if (preferences.getInt("userId", 0) != 0){
             offers.setVisibility(View.VISIBLE);
-            /*offers.setOnClickListener(view -> MainFragmentReplacement.Replace(
+            offers.setOnClickListener(view -> MainFragmentReplacement.replace(
                     requireActivity().getSupportFragmentManager(),
                     new Offers()
-            ));*/
+            ));
         }
         return root;
     }
