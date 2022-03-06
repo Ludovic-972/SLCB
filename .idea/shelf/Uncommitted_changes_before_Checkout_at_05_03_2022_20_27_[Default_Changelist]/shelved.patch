@@ -1,0 +1,1164 @@
+Index: app/src/main/java/com/tchoutchou/TripActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.tchoutchou;\r\n\r\nimport android.content.Context;\r\nimport android.content.Intent;\r\nimport android.content.SharedPreferences;\r\nimport android.os.Build;\r\nimport android.os.Bundle;\r\nimport android.view.View;\r\nimport android.widget.ListView;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.annotation.RequiresApi;\r\nimport androidx.appcompat.app.ActionBar;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport com.tchoutchou.model.Trip;\r\nimport com.tchoutchou.util.TripListAdapter;\r\n\r\nimport java.sql.Timestamp;\r\nimport java.text.ParseException;\r\nimport java.text.SimpleDateFormat;\r\nimport java.time.LocalDate;\r\nimport java.time.LocalDateTime;\r\nimport java.time.format.DateTimeFormatter;\r\nimport java.util.ArrayList;\r\nimport java.util.Calendar;\r\nimport java.util.Date;\r\nimport java.util.List;\r\nimport java.util.Locale;\r\nimport java.util.concurrent.TimeUnit;\r\n\r\npublic class TripActivity extends AppCompatActivity {\r\n\r\n\r\n    Bundle tripsInfos;\r\n    private List<Trip> trips = new ArrayList<>();\r\n\r\n\r\n    @RequiresApi(api = Build.VERSION_CODES.O)\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_rides);\r\n        tripsInfos = getIntent().getExtras();\r\n        initActionBar();\r\n\r\n\r\n        ListView tripListView = findViewById(R.id.trips);\r\n\r\n        SharedPreferences preferences = getSharedPreferences(\"userInfos\", Context.MODE_PRIVATE);\r\n        int user_id = preferences.getInt(\"userId\",0);\r\n        Thread tripsRecuperation = new Thread() {\r\n                @Override\r\n                public void run() { trips = Trip.getTrips(tripsInfos);\r\n                }\r\n            };\r\n        tripsRecuperation.start();\r\n        try {\r\n            tripsRecuperation.join();\r\n            TripListAdapter adapter = new TripListAdapter(this, trips,preferences.getInt(\"id\",0));\r\n            tripListView.setAdapter(adapter);\r\n            if (adapter.getBuyedTripId() != 0){\r\n                if (user_id == 0){\r\n                    SharedPreferences noAccountPreferences = getSharedPreferences(\"noAccountUser\", Context.MODE_PRIVATE);\r\n                    SharedPreferences.Editor editor = noAccountPreferences.edit();\r\n                    String formertripList = noAccountPreferences.getString(\"trips\",\"\");\r\n                    editor.putString(\"trips\",formertripList+adapter.getBuyedTripId()+\"|\");\r\n                    editor.apply();\r\n                }\r\n                Intent intent = new Intent(TripActivity.this,MainActivity.class);\r\n                startActivity(intent);\r\n                finish();\r\n            }\r\n        } catch (InterruptedException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n    }\r\n\r\n    @RequiresApi(api = Build.VERSION_CODES.O)\r\n    public void initActionBar(){\r\n        getSupportActionBar().show();\r\n        this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);\r\n        getSupportActionBar().setDisplayShowCustomEnabled(true);\r\n        getSupportActionBar().setDisplayHomeAsUpEnabled(true);\r\n        getSupportActionBar().setCustomView(R.layout.trip_action_bar);\r\n\r\n        View view = getSupportActionBar().getCustomView();\r\n\r\n        TextView tripDay = view.findViewById(R.id.tripDay);\r\n\r\n        String sb = getString(R.string.trip_action_bar_text) +\r\n                \"\\n\" +\r\n                String.join(\"/\", tripsInfos.getString(\"tripDay\").split(\"-\")) +\r\n                \" \" +\r\n                getString(R.string.trip_action_bar_at) +\r\n                \" \" +\r\n                tripsInfos.getString(\"departureHour\");\r\n        tripDay.setText(sb);\r\n\r\n\r\n\r\n    }\r\n\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/tchoutchou/TripActivity.java b/app/src/main/java/com/tchoutchou/TripActivity.java
+--- a/app/src/main/java/com/tchoutchou/TripActivity.java	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/java/com/tchoutchou/TripActivity.java	(date 1646504096388)
+@@ -3,44 +3,42 @@
+ import android.content.Context;
+ import android.content.Intent;
+ import android.content.SharedPreferences;
++import android.graphics.Color;
+ import android.os.Build;
+ import android.os.Bundle;
++import android.view.Gravity;
++import android.view.LayoutInflater;
+ import android.view.View;
++import android.view.ViewGroup;
++import android.widget.AdapterView;
++import android.widget.BaseAdapter;
+ import android.widget.ListView;
+ import android.widget.TextView;
+ 
+ import androidx.annotation.RequiresApi;
+ import androidx.appcompat.app.ActionBar;
++import androidx.appcompat.app.AlertDialog;
+ import androidx.appcompat.app.AppCompatActivity;
+ 
+ import com.tchoutchou.model.Trip;
+-import com.tchoutchou.util.TripListAdapter;
++import com.tchoutchou.model.UserTrips;
+ 
+-import java.sql.Timestamp;
+-import java.text.ParseException;
+-import java.text.SimpleDateFormat;
+-import java.time.LocalDate;
+-import java.time.LocalDateTime;
+-import java.time.format.DateTimeFormatter;
+ import java.util.ArrayList;
+-import java.util.Calendar;
+-import java.util.Date;
+ import java.util.List;
+-import java.util.Locale;
+-import java.util.concurrent.TimeUnit;
+ 
+-public class TripActivity extends AppCompatActivity {
++public class TripActivity extends AppCompatActivity{
+ 
+ 
+-    Bundle tripsInfos;
+-    private List<Trip> trips = new ArrayList<>();
++    private Bundle tripsInfos;
++    private List<Trip> tripList = new ArrayList<>();
+ 
+ 
+     @RequiresApi(api = Build.VERSION_CODES.O)
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+-        setContentView(R.layout.activity_rides);
++        setContentView(R.layout.activity_trips);
++
+         tripsInfos = getIntent().getExtras();
+         initActionBar();
+ 
+@@ -49,28 +47,75 @@
+ 
+         SharedPreferences preferences = getSharedPreferences("userInfos", Context.MODE_PRIVATE);
+         int user_id = preferences.getInt("userId",0);
++
+         Thread tripsRecuperation = new Thread() {
+                 @Override
+-                public void run() { trips = Trip.getTrips(tripsInfos);
++                public void run() {
++                    tripList = Trip.getTrips(tripsInfos);
+                 }
+             };
+         tripsRecuperation.start();
+         try {
+             tripsRecuperation.join();
+-            TripListAdapter adapter = new TripListAdapter(this, trips,preferences.getInt("id",0));
++            TripListAdapter adapter = new TripListAdapter(getApplicationContext());
+             tripListView.setAdapter(adapter);
+-            if (adapter.getBuyedTripId() != 0){
+-                if (user_id == 0){
+-                    SharedPreferences noAccountPreferences = getSharedPreferences("noAccountUser", Context.MODE_PRIVATE);
+-                    SharedPreferences.Editor editor = noAccountPreferences.edit();
+-                    String formertripList = noAccountPreferences.getString("trips","");
+-                    editor.putString("trips",formertripList+adapter.getBuyedTripId()+"|");
+-                    editor.apply();
+-                }
+-                Intent intent = new Intent(TripActivity.this,MainActivity.class);
+-                startActivity(intent);
+-                finish();
+-            }
++
++            tripListView.setOnItemClickListener((adapterView, view, i, l) -> {
++                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
++
++                Trip trip = tripList.get(i);
++
++                TextView title = new TextView(getApplicationContext());
++                String titleText = trip.getDepartureTown()
++                        +" -> "
++                        +trip.getArrivalTown()+"\n"
++                        +"le "
++                        +trip.getTripDay()+" "
++                        +getString(R.string.at)+" "
++                        +trip.getTripTime();
++
++                title.setText(titleText);
++                title.setBackgroundColor(Color.DKGRAY);
++                title.setPadding(10, 10, 10, 10);
++                title.setGravity(Gravity.CENTER);
++                title.setTextColor(Color.WHITE);
++                title.setTextSize(20);
++
++                builder.setCustomTitle(title)
++                        .setCancelable(false)
++                        .setMessage("Voulez achetez ce billet ?")
++                        .setPositiveButton("Oui", (dialogInterface, i1) -> {
++                            Thread buy = new Thread(){
++                                @Override
++                                public void run(){
++                                    UserTrips.addUserTrip(trip.getTripId(),user_id);
++                                }
++                            };
++                            buy.start();
++                            try {
++                                buy.join();
++                                dialogInterface.dismiss();
++
++                                if (user_id == 0){
++                                    SharedPreferences noAccountPreferences = getSharedPreferences("noAccountUser", Context.MODE_PRIVATE);
++                                    SharedPreferences.Editor editor = noAccountPreferences.edit();
++                                    String formertripList = noAccountPreferences.getString("trips","");
++                                    editor.putString("trips",formertripList+trip.getTripId()+"|");
++                                    editor.apply();
++                                }
++                                Intent intent = new Intent(TripActivity.this,MainActivity.class);
++                                startActivity(intent);
++                                finish();
++                            } catch (InterruptedException e) {
++                                e.printStackTrace();
++
++                            }
++                        })
++                        .setNegativeButton("Non",(dialogInterface,i2) -> dialogInterface.dismiss());
++
++                AlertDialog alert = builder.create();
++                alert.show();
++            });
+         } catch (InterruptedException e) {
+             e.printStackTrace();
+         }
+@@ -87,13 +132,13 @@
+ 
+         View view = getSupportActionBar().getCustomView();
+ 
+-        TextView tripDay = view.findViewById(R.id.tripDay);
++        TextView tripDay = view.findViewById(R.id.tripActionBarText);
+ 
+         String sb = getString(R.string.trip_action_bar_text) +
+                 "\n" +
+                 String.join("/", tripsInfos.getString("tripDay").split("-")) +
+                 " " +
+-                getString(R.string.trip_action_bar_at) +
++                getString(R.string.at) +
+                 " " +
+                 tripsInfos.getString("departureHour");
+         tripDay.setText(sb);
+@@ -103,4 +148,58 @@
+     }
+ 
+ 
++    private class TripListAdapter extends BaseAdapter {
++
++
++        private final LayoutInflater layoutInflater;
++
++
++        public TripListAdapter(Context context) {
++
++            this.layoutInflater = LayoutInflater.from(context);
++
++        }
++
++        @Override
++        public int getCount() {
++            return tripList.size();
++        }
++
++        @Override
++        public Object getItem(int i) {
++            return tripList.get(i);
++        }
++
++        @Override
++        public long getItemId(int i) {
++            return i;
++        }
++
++        @Override
++        public View getView(int i, View view, ViewGroup viewGroup) {
++            if (view == null) {
++                view = layoutInflater.inflate(R.layout.trip_list_layout, null);
++            }
++
++            Trip trip = tripList.get(i);
++
++
++            ((TextView) view.findViewById(R.id.tripDay)).setText(trip.getTripDay());
++            ((TextView) view.findViewById(R.id.departureHour)).setText(trip.getDepartureHour());
++            ((TextView) view.findViewById(R.id.departureTown)).setText(trip.getDepartureTown());
++            ((TextView) view.findViewById(R.id.arrivalHour)).setText(trip.getArrivalHour());
++            ((TextView) view.findViewById(R.id.arrivalTown)).setText(trip.getArrivalTown());
++
++            String price = trip.getPrice() +" €";
++            ((TextView) view.findViewById(R.id.price)).setText(price);
++
++            String tripTime = "~"+ trip.getTripTime() +" min";
++            ((TextView) view.findViewById(R.id.tripTime)).setText(tripTime);
++
++            return view;
++        }
++
++    }
++
++
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/tchoutchou/fragments/Home.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.tchoutchou.fragments;\r\n\r\nimport android.app.DatePickerDialog;\r\nimport android.app.TimePickerDialog;\r\nimport android.content.Context;\r\nimport android.content.Intent;\r\nimport android.content.SharedPreferences;\r\nimport android.net.ConnectivityManager;\r\nimport android.net.NetworkInfo;\r\nimport android.os.Bundle;\r\n\r\nimport androidx.fragment.app.Fragment;\r\n\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.ArrayAdapter;\r\nimport android.widget.AutoCompleteTextView;\r\nimport android.widget.Button;\r\nimport android.widget.EditText;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport com.tchoutchou.R;\r\nimport com.tchoutchou.TripActivity;\r\nimport com.tchoutchou.model.Towns;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.Calendar;\r\nimport java.util.List;\r\n\r\n\r\npublic class Home extends Fragment {\r\n\r\n    public Home() {}\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n    }\r\n\r\n    AutoCompleteTextView departureTown, arrivalTown;\r\n    EditText departureHour, tripDay;\r\n\r\n    SharedPreferences preferences;\r\n    private List<String> towns = new ArrayList<>();\r\n\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        View root = inflater.inflate(R.layout.fragment_home, container, false);\r\n\r\n        preferences = requireActivity().getSharedPreferences(\"userInfos\", Context.MODE_PRIVATE);\r\n\r\n        /* Détecter la position avec le GPS et entrer dans  departure Town*/\r\n        departureTown = root.findViewById(R.id.departureTown);\r\n        arrivalTown = root.findViewById(R.id.arrivalTown);\r\n        departureHour = root.findViewById(R.id.departureHour);\r\n        Button goToRides = root.findViewById(R.id.toRides);\r\n\r\n        TextView greetings = root.findViewById(R.id.greetings);\r\n        String username = preferences.getString(\"firstname\",\"\");\r\n\r\n        String text = greetings.getText().toString();\r\n\r\n        greetings.setText(text+\" \"+username+\"\\uD83D\\uDC4B,\");\r\n\r\n        Thread townsRecuperation = new Thread(){\r\n            @Override\r\n            public void run() {\r\n                towns = Towns.getAllTowns();\r\n            }\r\n        };\r\n        townsRecuperation.start();\r\n        try {\r\n            townsRecuperation.join() ;\r\n            ArrayAdapter<String> adapter = new ArrayAdapter<>(\r\n                    requireContext(),\r\n                    android.R.layout.simple_dropdown_item_1line,\r\n                    towns);\r\n\r\n            departureTown.setAdapter(adapter);\r\n            arrivalTown.setAdapter(adapter);\r\n        } catch (InterruptedException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n        departureHour.setOnClickListener(view -> {\r\n            Calendar calendar = Calendar.getInstance();\r\n            TimePickerDialog timePickerDialog = new TimePickerDialog(\r\n                    requireContext(),\r\n                    (timePicker, hourOfDay, minutes) -> departureHour.setText(String.format(\"%02d:%02d\", hourOfDay, minutes)),\r\n                    calendar.get(Calendar.HOUR_OF_DAY),\r\n                    calendar.get(Calendar.MINUTE),\r\n                    true);\r\n            timePickerDialog.show();\r\n        });\r\n\r\n        goToRides.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                if(noEmptyInputs()) {\r\n                    if (towns.contains(departureTown.getText().toString()) && towns.contains(arrivalTown.getText().toString())) {\r\n                        Intent intent = new Intent(requireActivity(), TripActivity.class);\r\n\r\n                        intent.putExtra(\"departureTown\", departureTown.getText().toString());\r\n                        intent.putExtra(\"arrivalTown\", arrivalTown.getText().toString());\r\n                        intent.putExtra(\"departureHour\", departureHour.getText().toString());\r\n                        intent.putExtra(\"tripDay\", tripDay.getText().toString());\r\n\r\n                        startActivity(intent);\r\n                    }else{\r\n                        Toast.makeText(requireContext(), \"Veuillez entrer des villes existantes\",\r\n                                Toast.LENGTH_SHORT).show();\r\n                    }\r\n                }else{\r\n                    Toast.makeText(requireContext(), \"Veuillez remplir tous les champs\",\r\n                            Toast.LENGTH_SHORT).show();\r\n                }\r\n            }\r\n\r\n            private boolean noEmptyInputs() {\r\n                return !departureTown.getText().toString().equals(\"\")\r\n                        && !arrivalTown.getText().toString().equals(\"\")\r\n                        && !departureHour.getText().toString().equals(\"\")\r\n                        && !tripDay.getText().toString().equals(\"\");\r\n            }\r\n        });\r\n\r\n        tripDay = root.findViewById(R.id.tripDay);\r\n        tripDay.setOnClickListener(view -> {\r\n\r\n            Calendar c = Calendar.getInstance();\r\n\r\n            DatePickerDialog.OnDateSetListener dateSetListener = (view1, year, monthOfYear, dayOfMonth) -> {\r\n                String date = \"\";\r\n                date+= (dayOfMonth<10) ? \"0\"+dayOfMonth+\"-\" : dayOfMonth+\"-\";\r\n                date+= (monthOfYear<10) ? \"0\"+(monthOfYear+1)+\"-\" : (monthOfYear+1)+\"-\";\r\n                date+= year;\r\n                tripDay.setText(date);\r\n            };\r\n            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),\r\n                    android.R.style.Theme_Holo_Light_Dialog_NoActionBar\r\n                    ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));\r\n            datePickerDialog.show();\r\n        });\r\n\r\n\r\n        Button offers = root.findViewById(R.id.offers);\r\n        if (!preferences.getString(\"mail\", \"\").equals(\"\")){\r\n            offers.setVisibility(View.VISIBLE);\r\n        }\r\n\r\n\r\n        return root;\r\n    }\r\n\r\n    private boolean isNetworkConnected(){\r\n        try {\r\n            ConnectivityManager connectivityManager = (ConnectivityManager) requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE);\r\n            NetworkInfo[] networkInfo = null;\r\n\r\n            if (connectivityManager != null) {\r\n                networkInfo = connectivityManager.getAllNetworkInfo();\r\n            }\r\n            Log.d(\"InternetConnection\",\"Device is connected to Internet\");\r\n            return networkInfo != null & networkInfo[0].isConnected();\r\n        }catch(NullPointerException e){\r\n            Log.e(\"InternetConnection\",\"Device is not connected to Internet\");\r\n            return false;\r\n        }\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/tchoutchou/fragments/Home.java b/app/src/main/java/com/tchoutchou/fragments/Home.java
+--- a/app/src/main/java/com/tchoutchou/fragments/Home.java	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/java/com/tchoutchou/fragments/Home.java	(date 1646507793377)
+@@ -12,6 +12,7 @@
+ import androidx.fragment.app.Fragment;
+ 
+ import android.util.Log;
++import android.view.KeyEvent;
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.view.ViewGroup;
+@@ -25,6 +26,7 @@
+ import com.tchoutchou.R;
+ import com.tchoutchou.TripActivity;
+ import com.tchoutchou.model.Towns;
++import com.tchoutchou.util.MainFragmentReplacement;
+ 
+ import java.util.ArrayList;
+ import java.util.Calendar;
+@@ -40,8 +42,6 @@
+         super.onCreate(savedInstanceState);
+     }
+ 
+-    AutoCompleteTextView departureTown, arrivalTown;
+-    EditText departureHour, tripDay;
+ 
+     SharedPreferences preferences;
+     private List<String> towns = new ArrayList<>();
+@@ -54,10 +54,10 @@
+ 
+         preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
+ 
+-        /* Détecter la position avec le GPS et entrer dans  departure Town*/
+-        departureTown = root.findViewById(R.id.departureTown);
+-        arrivalTown = root.findViewById(R.id.arrivalTown);
+-        departureHour = root.findViewById(R.id.departureHour);
++        EditText tripDay = root.findViewById(R.id.tripDay);
++        EditText departureHour = root.findViewById(R.id.departureHour);
++        AutoCompleteTextView departureTown = root.findViewById(R.id.departureTown);
++        AutoCompleteTextView arrivalTown = root.findViewById(R.id.arrivalTown);
+         Button goToRides = root.findViewById(R.id.toRides);
+ 
+         TextView greetings = root.findViewById(R.id.greetings);
+@@ -87,6 +87,23 @@
+             e.printStackTrace();
+         }
+ 
++        tripDay.setOnClickListener(view -> {
++
++            Calendar c = Calendar.getInstance();
++
++            DatePickerDialog.OnDateSetListener dateSetListener = (view1, year, monthOfYear, dayOfMonth) -> {
++                String date = "";
++                date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
++                date+= (monthOfYear<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
++                date+= year;
++                tripDay.setText(date);
++            };
++            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
++                    android.R.style.Theme_Holo_Light_Dialog_NoActionBar
++                    ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
++            datePickerDialog.show();
++        });
++
+         departureHour.setOnClickListener(view -> {
+             Calendar calendar = Calendar.getInstance();
+             TimePickerDialog timePickerDialog = new TimePickerDialog(
+@@ -98,6 +115,18 @@
+             timePickerDialog.show();
+         });
+ 
++        departureTown.setOnKeyListener(new View.OnKeyListener() {
++            @Override
++            public boolean onKey(View view, int keyCode, KeyEvent event) {
++                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
++                    arrivalTown.setSelection(0);
++                    return true;
++                }
++                return false;
++            }
++        });
++        
++
+         goToRides.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+@@ -129,31 +158,16 @@
+             }
+         });
+ 
+-        tripDay = root.findViewById(R.id.tripDay);
+-        tripDay.setOnClickListener(view -> {
+-
+-            Calendar c = Calendar.getInstance();
+-
+-            DatePickerDialog.OnDateSetListener dateSetListener = (view1, year, monthOfYear, dayOfMonth) -> {
+-                String date = "";
+-                date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
+-                date+= (monthOfYear<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
+-                date+= year;
+-                tripDay.setText(date);
+-            };
+-            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+-                    android.R.style.Theme_Holo_Light_Dialog_NoActionBar
+-                    ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
+-            datePickerDialog.show();
+-        });
+ 
+ 
+         Button offers = root.findViewById(R.id.offers);
+-        if (!preferences.getString("mail", "").equals("")){
++        if (preferences.getInt("userId", 0) != 0){
+             offers.setVisibility(View.VISIBLE);
++            offers.setOnClickListener(view -> MainFragmentReplacement.Replace(
++                    requireActivity().getSupportFragmentManager(),
++                    new Offers()
++            ));
+         }
+-
+-
+         return root;
+     }
+ 
+Index: app/src/main/java/com/tchoutchou/util/TripListAdapter.java
+===================================================================
+diff --git a/app/src/main/java/com/tchoutchou/util/TripListAdapter.java b/app/src/main/java/com/tchoutchou/util/TripListAdapter.java
+deleted file mode 100644
+--- a/app/src/main/java/com/tchoutchou/util/TripListAdapter.java	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ /dev/null	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
+@@ -1,148 +0,0 @@
+-package com.tchoutchou.util;
+-
+-import android.content.Context;
+-import android.view.LayoutInflater;
+-import android.view.View;
+-import android.view.ViewGroup;
+-import android.view.WindowManager;
+-import android.widget.BaseAdapter;
+-import android.widget.Button;
+-import android.widget.TextView;
+-
+-
+-import androidx.appcompat.app.AlertDialog;
+-
+-import com.tchoutchou.R;
+-import com.tchoutchou.model.Trip;
+-import com.tchoutchou.model.UserTrips;
+-
+-import java.util.List;
+-
+-public class TripListAdapter extends BaseAdapter {
+-
+-    private final Context context;
+-    private final List<Trip> tripList;
+-    private final LayoutInflater layoutInflater;
+-    private int user_id;
+-    private int buyedTripId;
+-
+-    public TripListAdapter(Context context, List<Trip> listData,int user_id) {
+-        this.context = context;
+-        this.tripList = listData;
+-        this.layoutInflater = LayoutInflater.from(context);
+-        this.user_id = user_id;
+-
+-    }
+-
+-    @Override
+-    public int getCount() {
+-        return tripList.size();
+-    }
+-
+-    @Override
+-    public Object getItem(int i) {
+-        return tripList.get(i);
+-    }
+-
+-    @Override
+-    public long getItemId(int i) {
+-        return i;
+-    }
+-
+-    @Override
+-    public View getView(int i, View view, ViewGroup viewGroup) {
+-        TripViewHolder holder;
+-        buyedTripId = 0;
+-        if (view == null) {
+-            view = layoutInflater.inflate(R.layout.trip_list_layout, null);
+-            holder = new TripViewHolder();
+-            holder.tripDay = view.findViewById(R.id.tripDay);
+-            holder.departureHour = view.findViewById(R.id.departureHour);
+-            holder.departureTown =  view.findViewById(R.id.departureTown);
+-            holder.arrivalHour =  view.findViewById(R.id.arrivalHour);
+-            holder.arrivalTown =  view.findViewById(R.id.arrivalTown);
+-            holder.price =  view.findViewById(R.id.price);
+-            holder.tripTime =  view.findViewById(R.id.tripTime);
+-            view.setTag(holder);
+-        } else {
+-            holder = (TripViewHolder) view.getTag();
+-        }
+-
+-        Trip trip = this.tripList.get(i);
+-
+-        //holder.tripDay.setText(trip.getTripDay());
+-        holder.departureHour.setText(trip.getDepartureHour());
+-        holder.departureTown.setText(trip.getDepartureTown());
+-        holder.arrivalHour.setText(trip.getArrivalHour());
+-        holder.arrivalTown.setText(trip.getArrivalTown());
+-        String price = trip.getPrice() +"€";
+-        holder.price.setText(price);
+-        String tripTime = "~"+ trip.getTripTime() +"min";
+-        holder.tripTime.setText(tripTime);
+-
+-
+-        view.setOnClickListener(view1 -> {
+-
+-            AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
+-
+-            builder.setCancelable(false)
+-                    .setView(layoutInflater.inflate(R.layout.trip_infos,null));
+-
+-
+-
+-            AlertDialog alert = builder.create();
+-
+-            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+-            lp.copyFrom(alert.getWindow().getAttributes());
+-            lp.width = WindowManager.LayoutParams.WRAP_CONTENT ;
+-            lp.height =  WindowManager.LayoutParams.WRAP_CONTENT ;
+-            alert.show();
+-            alert.getWindow().setAttributes(lp);
+-
+-            TextView title = alert.findViewById(R.id.title);
+-            title.setText(trip.getDepartureTown()+" -> "+trip.getArrivalTown());
+-
+-            Button close = alert.findViewById(R.id.closingButton);
+-            close.setOnClickListener(v -> alert.dismiss());
+-
+-            Button buyButton = alert.findViewById(R.id.buyButton);
+-
+-            buyButton.setOnClickListener(v -> {
+-                Thread buy = new Thread(){
+-                    @Override
+-                    public void run(){
+-                        UserTrips.addUserTrip(trip.getTripId(),user_id);
+-                    }
+-                };
+-
+-                buy.start();
+-                try {
+-                    buy.join();
+-                    this.buyedTripId = trip.getTripId();
+-                } catch (InterruptedException e) {
+-                    e.printStackTrace();
+-
+-                }
+-                alert.dismiss();
+-            });
+-        });
+-
+-
+-        return view;
+-    }
+-
+-    public int getBuyedTripId(){
+-        return buyedTripId;
+-    }
+-
+-    static class TripViewHolder{
+-        TextView
+-                tripDay,
+-                departureHour,
+-                departureTown,
+-                arrivalHour,
+-                arrivalTown,
+-                price,
+-                tripTime;
+-    }
+-}
+Index: app/src/main/java/com/tchoutchou/fragments/UserTickets.java
+===================================================================
+diff --git a/app/src/main/java/com/tchoutchou/fragments/UserTickets.java b/app/src/main/java/com/tchoutchou/fragments/UserTickets.java
+deleted file mode 100644
+--- a/app/src/main/java/com/tchoutchou/fragments/UserTickets.java	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ /dev/null	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
+@@ -1,66 +0,0 @@
+-package com.tchoutchou.fragments;
+-
+-import android.os.Bundle;
+-
+-import androidx.fragment.app.Fragment;
+-
+-import android.view.LayoutInflater;
+-import android.view.View;
+-import android.view.ViewGroup;
+-
+-import com.tchoutchou.R;
+-
+-/**
+- * A simple {@link Fragment} subclass.
+- * Use the {@link UserTickets#newInstance} factory method to
+- * create an instance of this fragment.
+- */
+-public class UserTickets extends Fragment {
+-
+-    // TODO: Rename parameter arguments, choose names that match
+-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+-    private static final String ARG_PARAM1 = "param1";
+-    private static final String ARG_PARAM2 = "param2";
+-
+-    // TODO: Rename and change types of parameters
+-    private String mParam1;
+-    private String mParam2;
+-
+-    public UserTickets() {
+-        // Required empty public constructor
+-    }
+-
+-    /**
+-     * Use this factory method to create a new instance of
+-     * this fragment using the provided parameters.
+-     *
+-     * @param param1 Parameter 1.
+-     * @param param2 Parameter 2.
+-     * @return A new instance of fragment UserTickets.
+-     */
+-    // TODO: Rename and change types and number of parameters
+-    public static UserTickets newInstance(String param1, String param2) {
+-        UserTickets fragment = new UserTickets();
+-        Bundle args = new Bundle();
+-        args.putString(ARG_PARAM1, param1);
+-        args.putString(ARG_PARAM2, param2);
+-        fragment.setArguments(args);
+-        return fragment;
+-    }
+-
+-    @Override
+-    public void onCreate(Bundle savedInstanceState) {
+-        super.onCreate(savedInstanceState);
+-        if (getArguments() != null) {
+-            mParam1 = getArguments().getString(ARG_PARAM1);
+-            mParam2 = getArguments().getString(ARG_PARAM2);
+-        }
+-    }
+-
+-    @Override
+-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+-                             Bundle savedInstanceState) {
+-        // Inflate the layout for this fragment
+-        return inflater.inflate(R.layout.fragment_user_tickets, container, false);
+-    }
+-}
+\ No newline at end of file
+Index: app/src/main/res/layout/trip_infos.xml
+===================================================================
+diff --git a/app/src/main/res/layout/trip_infos.xml b/app/src/main/res/layout/trip_infos.xml
+deleted file mode 100644
+--- a/app/src/main/res/layout/trip_infos.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ /dev/null	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
+@@ -1,54 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:layout_width="wrap_content"
+-    android:layout_height="wrap_content"
+-    >
+-
+-
+-    <Button
+-        android:id="@+id/closingButton"
+-        android:layout_width="50dp"
+-        android:layout_height="50dp"
+-        android:text="X"
+-        android:textColor="#FFFFFF"
+-        android:layout_alignParentTop="true"
+-        android:layout_alignParentEnd="true"
+-        android:backgroundTint="#FF0000" />
+-
+-    <TextView
+-        android:id="@+id/title"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:layout_below="@id/closingButton"
+-        android:textSize="20sp"
+-        android:layout_centerHorizontal="true"
+-        android:layout_marginTop="10dp"/>
+-
+-
+-    <com.google.android.gms.maps.MapView
+-        android:id="@+id/mapView"
+-        android:layout_width="match_parent"
+-        android:layout_height="300dp"
+-        android:layout_marginHorizontal="10dp"
+-        android:layout_below="@id/title"
+-        android:layout_marginTop="10dp"/>
+-
+-    <TextView
+-        android:id="@+id/infosText"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:layout_below="@id/mapView"
+-        android:text="TextView" />
+-
+-    <Button
+-        android:id="@+id/buyButton"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:layout_centerHorizontal="true"
+-        android:layout_marginTop="10dp"
+-        android:layout_below="@id/infosText"
+-        android:text="Acheter un ticket" />
+-
+-
+-
+-</RelativeLayout>
+\ No newline at end of file
+Index: app/src/main/res/layout/fragment_user_tickets.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_user_tickets.xml b/app/src/main/res/layout/fragment_user_tickets.xml
+deleted file mode 100644
+--- a/app/src/main/res/layout/fragment_user_tickets.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ /dev/null	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
+@@ -1,14 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-    xmlns:tools="http://schemas.android.com/tools"
+-    android:layout_width="match_parent"
+-    android:layout_height="match_parent"
+-    tools:context=".fragments.UserTickets">
+-
+-    <!-- TODO: Update blank fragment layout -->
+-    <TextView
+-        android:layout_width="match_parent"
+-        android:layout_height="match_parent"
+-        android:text="@string/hello_blank_fragment" />
+-
+-</FrameLayout>
+\ No newline at end of file
+Index: app/src/main/res/layout/fragment_home.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<RelativeLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\nxmlns:tools=\"http://schemas.android.com/tools\"\r\nandroid:layout_width=\"match_parent\"\r\nandroid:layout_height=\"match_parent\"\r\nxmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\ntools:context=\".fragments.Home\">\r\n\r\n<ImageView\r\n    android:id=\"@+id/logo\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"wrap_content\"\r\n    app:srcCompat=\"@drawable/logo_light\"\r\n    android:layout_alignParentTop=\"true\"\r\n    android:layout_centerHorizontal=\"true\"\r\n    android:layout_marginBottom=\"30dp\"\r\n    android:layout_marginHorizontal=\"30dp\"/>\r\n\r\n<TextView\r\n    android:id=\"@+id/greetings\"\r\n    android:layout_width=\"wrap_content\"\r\n    android:layout_height=\"wrap_content\"\r\n    android:text=\"Bonjour\"\r\n    android:layout_below=\"@id/logo\"\r\n    android:textSize=\"20sp\"\r\n    android:layout_marginStart=\"20dp\"\r\n    />\r\n\r\n<TextView\r\n    android:id=\"@+id/researchText\"\r\n    android:layout_width=\"wrap_content\"\r\n    android:layout_height=\"wrap_content\"\r\n    android:text=\"Rechercher un trajet..\"\r\n    android:layout_below=\"@id/greetings\"\r\n    android:textSize=\"20sp\"\r\n    android:layout_marginStart=\"20dp\"\r\n    android:layout_marginTop=\"20dp\"\r\n    android:layout_marginBottom=\"10dp\"/>\r\n\r\n    <TextView\r\n        android:id=\"@+id/when\"\r\n        android:layout_width=\"70dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/researchText\"\r\n        android:layout_alignBaseline=\"@id/tripDay\"\r\n        android:layout_marginStart=\"20dp\"\r\n        android:text=\"Quand ?\"\r\n        android:textSize=\"18sp\" />\r\n\r\n    <EditText\r\n        android:id=\"@+id/tripDay\"\r\n        android:layout_width=\"180dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/researchText\"\r\n        android:layout_marginHorizontal=\"30dp\"\r\n        android:layout_marginStart=\"2dp\"\r\n        android:layout_marginTop=\"20dp\"\r\n        android:layout_toEndOf=\"@id/when\"\r\n        android:focusableInTouchMode=\"false\"\r\n        android:hint=\"Date\"\r\n        android:inputType=\"date\"\r\n        android:minHeight=\"48dp\" />\r\n\r\n    <EditText\r\n        android:id=\"@+id/departureHour\"\r\n        android:layout_width=\"80dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_alignBaseline=\"@id/tripDay\"\r\n        android:layout_alignParentEnd=\"true\"\r\n        android:layout_marginStart=\"2dp\"\r\n        android:layout_marginTop=\"10dp\"\r\n        android:layout_marginEnd=\"20dp\"\r\n        android:layout_toEndOf=\"@id/tripDay\"\r\n        android:focusableInTouchMode=\"false\"\r\n        android:hint=\"00:00\"\r\n        android:inputType=\"time\"\r\n        android:minHeight=\"48dp\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/from\"\r\n        android:layout_width=\"70dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/tripDay\"\r\n        android:layout_alignBaseline=\"@id/departureTown\"\r\n        android:layout_marginStart=\"20dp\"\r\n        android:text=\"D'où ?\"\r\n        android:textSize=\"18sp\" />\r\n\r\n    <AutoCompleteTextView\r\n        android:id=\"@+id/departureTown\"\r\n        android:layout_width=\"200dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/tripDay\"\r\n        android:layout_marginTop=\"5dp\"\r\n        android:layout_toEndOf=\"@id/from\"\r\n        android:hint=\"Ville de départ\"\r\n        android:inputType=\"textCapWords\"\r\n        android:minHeight=\"48dp\" />\r\n\r\n    <ImageButton\r\n        android:id=\"@+id/departureTownLocalisation\"\r\n        android:layout_width=\"53dp\"\r\n        android:layout_height=\"48dp\"\r\n        android:layout_below=\"@id/departureHour\"\r\n        android:layout_alignParentEnd=\"true\"\r\n        android:layout_marginTop=\"5dp\"\r\n        android:layout_marginEnd=\"20dp\"\r\n        android:layout_toEndOf=\"@id/departureTown\"\r\n        android:background=\"@drawable/ripple\"\r\n        android:padding=\"10dp\"\r\n        android:scaleType=\"fitCenter\"\r\n        android:src=\"@drawable/map_icon\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/to\"\r\n        android:layout_width=\"70dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/departureTown\"\r\n        android:layout_alignBaseline=\"@id/arrivalTown\"\r\n        android:layout_marginStart=\"20dp\"\r\n        android:text=\"Vers ?\"\r\n        android:textSize=\"18sp\" />\r\n\r\n    <AutoCompleteTextView\r\n        android:id=\"@+id/arrivalTown\"\r\n        android:layout_width=\"200dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/departureTown\"\r\n        android:layout_marginHorizontal=\"30dp\"\r\n        android:layout_marginStart=\"0dp\"\r\n        android:layout_marginTop=\"2dp\"\r\n        android:layout_toEndOf=\"@+id/to\"\r\n        android:hint=\"Ville d'arrivée\"\r\n        android:inputType=\"textCapWords\"\r\n        android:minHeight=\"48dp\" />\r\n\r\n    <ImageButton\r\n        android:id=\"@+id/arrivalTownLocalisation\"\r\n        android:layout_width=\"53dp\"\r\n        android:layout_height=\"48dp\"\r\n        android:layout_below=\"@id/departureTownLocalisation\"\r\n        android:layout_alignParentEnd=\"true\"\r\n        android:layout_marginTop=\"5dp\"\r\n        android:layout_marginEnd=\"20dp\"\r\n        android:layout_toEndOf=\"@id/arrivalTown\"\r\n        android:background=\"@drawable/ripple\"\r\n        android:padding=\"10dp\"\r\n        android:scaleType=\"fitCenter\"\r\n        android:src=\"@drawable/map_icon\" />\r\n\r\n    <Button\r\n    android:id=\"@+id/toRides\"\r\n    android:layout_width=\"wrap_content\"\r\n    android:layout_height=\"wrap_content\"\r\n    android:text=\"Chercher un bus\"\r\n    android:layout_centerHorizontal=\"true\"\r\n    android:layout_marginTop=\"15dp\"\r\n    android:layout_below=\"@id/arrivalTown\"\r\n    />\r\n\r\n<Button\r\n    android:id=\"@+id/offers\"\r\n    android:layout_width=\"wrap_content\"\r\n    android:layout_height=\"wrap_content\"\r\n    android:text=\"Voir les offres et les avantages\"\r\n    android:layout_centerHorizontal=\"true\"\r\n    android:layout_marginBottom=\"20dp\"\r\n    android:layout_alignParentBottom=\"true\"\r\n    android:visibility=\"invisible\"\r\n    />\r\n\r\n</RelativeLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_home.xml b/app/src/main/res/layout/fragment_home.xml
+--- a/app/src/main/res/layout/fragment_home.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/res/layout/fragment_home.xml	(date 1646490007149)
+@@ -88,7 +88,7 @@
+ 
+     <AutoCompleteTextView
+         android:id="@+id/departureTown"
+-        android:layout_width="200dp"
++        android:layout_width="300dp"
+         android:layout_height="wrap_content"
+         android:layout_below="@id/tripDay"
+         android:layout_marginTop="5dp"
+@@ -97,20 +97,6 @@
+         android:inputType="textCapWords"
+         android:minHeight="48dp" />
+ 
+-    <ImageButton
+-        android:id="@+id/departureTownLocalisation"
+-        android:layout_width="53dp"
+-        android:layout_height="48dp"
+-        android:layout_below="@id/departureHour"
+-        android:layout_alignParentEnd="true"
+-        android:layout_marginTop="5dp"
+-        android:layout_marginEnd="20dp"
+-        android:layout_toEndOf="@id/departureTown"
+-        android:background="@drawable/ripple"
+-        android:padding="10dp"
+-        android:scaleType="fitCenter"
+-        android:src="@drawable/map_icon" />
+-
+     <TextView
+         android:id="@+id/to"
+         android:layout_width="70dp"
+@@ -123,30 +109,17 @@
+ 
+     <AutoCompleteTextView
+         android:id="@+id/arrivalTown"
+-        android:layout_width="200dp"
++        android:layout_width="300dp"
+         android:layout_height="wrap_content"
+         android:layout_below="@id/departureTown"
+         android:layout_marginHorizontal="30dp"
+-        android:layout_marginStart="0dp"
++        android:layout_marginEnd="20dp"
+         android:layout_marginTop="2dp"
+         android:layout_toEndOf="@+id/to"
+         android:hint="Ville d'arrivée"
+         android:inputType="textCapWords"
+         android:minHeight="48dp" />
+ 
+-    <ImageButton
+-        android:id="@+id/arrivalTownLocalisation"
+-        android:layout_width="53dp"
+-        android:layout_height="48dp"
+-        android:layout_below="@id/departureTownLocalisation"
+-        android:layout_alignParentEnd="true"
+-        android:layout_marginTop="5dp"
+-        android:layout_marginEnd="20dp"
+-        android:layout_toEndOf="@id/arrivalTown"
+-        android:background="@drawable/ripple"
+-        android:padding="10dp"
+-        android:scaleType="fitCenter"
+-        android:src="@drawable/map_icon" />
+ 
+     <Button
+     android:id="@+id/toRides"
+Index: app/src/main/res/values-en/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<resources>\r\n    <string name=\"hello_blank_fragment\">Hello blank fragment</string>\r\n    <string name=\"trip_action_bar_text\">Bus availables from</string>\r\n    <string name=\"trip_action_bar_at\">\" at \"</string>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values-en/strings.xml b/app/src/main/res/values-en/strings.xml
+--- a/app/src/main/res/values-en/strings.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/res/values-en/strings.xml	(date 1646490345243)
+@@ -2,5 +2,5 @@
+ <resources>
+     <string name="hello_blank_fragment">Hello blank fragment</string>
+     <string name="trip_action_bar_text">Bus availables from</string>
+-    <string name="trip_action_bar_at">" at "</string>
++    <string name="at">" at "</string>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/java/com/tchoutchou/fragments/user/UserConnection.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.tchoutchou.fragments.user;\r\n\r\nimport android.content.Context;\r\nimport android.content.SharedPreferences;\r\nimport android.os.Bundle;\r\n\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.fragment.app.FragmentManager;\r\n\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Button;\r\nimport android.widget.EditText;\r\nimport android.widget.Toast;\r\n\r\nimport com.tchoutchou.fragments.Home;\r\nimport com.tchoutchou.R;\r\nimport com.tchoutchou.model.User;\r\nimport com.tchoutchou.util.InexistantUserException;\r\nimport com.tchoutchou.util.MainFragmentReplacement;\r\n\r\nimport java.util.List;\r\n\r\n\r\npublic class UserConnection extends Fragment {\r\n\r\n\r\n    private User user;\r\n    boolean registered;\r\n\r\n    public UserConnection() {\r\n    }\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n    }\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        View root = inflater.inflate(R.layout.fragment_user_connection, container, false);\r\n        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(\"userInfos\", Context.MODE_PRIVATE);\r\n        SharedPreferences.Editor editor = sharedPreferences.edit();\r\n        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();\r\n\r\n        EditText mail = root.findViewById(R.id.mail);\r\n        EditText mdp = root.findViewById(R.id.password);\r\n\r\n        Button login = root.findViewById(R.id.login);\r\n        login.setOnClickListener(view -> {\r\n            String loginText = mail.getText().toString();\r\n            String passwordText = mdp.getText().toString();\r\n\r\n            if (!loginText.equals(\"\") && !passwordText.equals(\"\")) {\r\n                registered = false;\r\n                Thread verify = new Thread() {\r\n                    @Override\r\n                    public void run() {\r\n                        try {\r\n                            user = User.getInformationsFromDB(loginText, passwordText);\r\n                            registered = true;\r\n                        } catch (InexistantUserException e) {\r\n                            e.printStackTrace();\r\n                        }\r\n                    }\r\n                };\r\n                verify.start();\r\n\r\n                try {\r\n                    verify.join();\r\n                    if (!registered)\r\n                        Toast.makeText(requireContext(), \"Login ou mot de passe incorrecte\", Toast.LENGTH_SHORT).show();\r\n                    else {\r\n                        editor.putInt(\"id\", user.getId());\r\n                        editor.putString(\"lastname\", user.getLastname());\r\n                        editor.putString(\"firstname\", user.getFirstname());\r\n                        editor.putString(\"mail\", user.getMail());\r\n                        editor.putString(\"birthdate\", user.getBirthdate());\r\n                        editor.putString(\"phoneNumber\", user.getPhoneNumber());\r\n                        editor.putString(\"password\", user.getPassword());\r\n\r\n                        editor.apply();\r\n                        Toast.makeText(requireContext(), \"Content de vous revoir !\", Toast.LENGTH_SHORT).show();\r\n                        MainFragmentReplacement.Replace(fragmentManager, new Home());\r\n                    }\r\n                } catch (InterruptedException e) {\r\n                    e.printStackTrace();\r\n                }\r\n            } else\r\n                Toast.makeText(requireContext(), \"Veuillez remplir tous les champs.\", Toast.LENGTH_SHORT).show();\r\n\r\n\r\n        });\r\n\r\n        Button register = root.findViewById(R.id.register);\r\n        register.setOnClickListener(view -> MainFragmentReplacement.Replace(fragmentManager, new UserRegistration()));\r\n        return root;\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/tchoutchou/fragments/user/UserConnection.java b/app/src/main/java/com/tchoutchou/fragments/user/UserConnection.java
+--- a/app/src/main/java/com/tchoutchou/fragments/user/UserConnection.java	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/java/com/tchoutchou/fragments/user/UserConnection.java	(date 1646339762956)
+@@ -73,7 +73,7 @@
+                     if (!registered)
+                         Toast.makeText(requireContext(), "Login ou mot de passe incorrecte", Toast.LENGTH_SHORT).show();
+                     else {
+-                        editor.putInt("id", user.getId());
++                        editor.putInt("userId", user.getId());
+                         editor.putString("lastname", user.getLastname());
+                         editor.putString("firstname", user.getFirstname());
+                         editor.putString("mail", user.getMail());
+@@ -82,7 +82,7 @@
+                         editor.putString("password", user.getPassword());
+ 
+                         editor.apply();
+-                        Toast.makeText(requireContext(), "Content de vous revoir !", Toast.LENGTH_SHORT).show();
++                        Toast.makeText(requireContext(), "Content de vous revoir"+user.getFirstname()+" !", Toast.LENGTH_SHORT).show();
+                         MainFragmentReplacement.Replace(fragmentManager, new Home());
+                     }
+                 } catch (InterruptedException e) {
+Index: app/src/main/java/com/tchoutchou/model/UserTrips.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.tchoutchou.model;\r\n\r\nimport com.tchoutchou.util.JDBCUtils;\r\n\r\nimport java.sql.Connection;\r\nimport java.sql.ResultSet;\r\nimport java.sql.SQLException;\r\nimport java.sql.Statement;\r\n\r\npublic class UserTrips {\r\n\r\n    private UserTrips(){}\r\n\r\n    public static void addUserTrip(int userId,int tripId){\r\n        Connection connection = JDBCUtils.getConnection();\r\n\r\n        String req = \"Insert into userTrips (user_id,trip_id) values (\"+\r\n                userId+\",\"+\r\n                tripId\r\n                +\")\";\r\n        Statement st;\r\n        try {\r\n            st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);\r\n            st.executeUpdate(req);\r\n        }catch(SQLException e){\r\n            e.printStackTrace();\r\n        }finally {\r\n            JDBCUtils.close(connection);\r\n        }\r\n\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/tchoutchou/model/UserTrips.java b/app/src/main/java/com/tchoutchou/model/UserTrips.java
+--- a/app/src/main/java/com/tchoutchou/model/UserTrips.java	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/java/com/tchoutchou/model/UserTrips.java	(date 1646338824114)
+@@ -1,5 +1,7 @@
+ package com.tchoutchou.model;
+ 
++import android.util.Log;
++
+ import com.tchoutchou.util.JDBCUtils;
+ 
+ import java.sql.Connection;
+@@ -18,6 +20,7 @@
+                 userId+","+
+                 tripId
+                 +")";
++        Log.d("ExtDB",req);
+         Statement st;
+         try {
+             st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+Index: app/src/main/java/com/tchoutchou/model/Trip.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.tchoutchou.model;\r\n\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\n\r\nimport com.tchoutchou.util.JDBCUtils;\r\n\r\nimport java.sql.Connection;\r\nimport java.sql.ResultSet;\r\nimport java.sql.SQLException;\r\nimport java.sql.Statement;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class Trip {\r\n\r\n    private final int tripId;\r\n    private final String tripDay;\r\n    private final String departureHour;\r\n    private final String departureTown;\r\n    private final String arrivalHour;\r\n    private final String arrivalTown;\r\n    private final float price;\r\n    private final int tripTime;\r\n\r\n    public Trip(int tripId,String tripDay, String departureHour,\r\n                String departureTown, String arrivalHour,\r\n                String arrivalTown, float price,int tripTime) {\r\n        this.tripId = tripId;\r\n        this.tripDay = tripDay;\r\n        this.departureHour = departureHour;\r\n        this.departureTown = departureTown;\r\n        this.arrivalHour = arrivalHour;\r\n        this.arrivalTown = arrivalTown;\r\n        this.price = price;\r\n        this.tripTime = tripTime;\r\n    }\r\n\r\n    public int getTripId() { return tripId; }\r\n\r\n    public String getTripDay() { return tripDay; }\r\n\r\n    public String getDepartureHour() {\r\n        return departureHour;\r\n    }\r\n\r\n    public String getDepartureTown() {\r\n        return departureTown;\r\n    }\r\n\r\n    public String getArrivalHour() {\r\n        return arrivalHour;\r\n    }\r\n\r\n    public String getArrivalTown() {\r\n        return arrivalTown;\r\n    }\r\n\r\n    public float getPrice() {\r\n        return price;\r\n    }\r\n\r\n    public int getTripTime() {\r\n        return tripTime;\r\n    }\r\n\r\n    public static List<Trip> getTrips(Bundle infos){\r\n        List<Trip> tripList = new ArrayList<>();\r\n        String req = \"SELECT trip_id,DATE(departureTime),DATE_FORMAT(departureTime,\\\"%H:%i\\\"),departureTown,DATE_FORMAT(arrivalTime,\\\"%H:%i\\\"),arrivalTown,\" +\r\n                \"price,TIMESTAMPDIFF(MINUTE,departureTime,arrivalTime) \" +\r\n                \"FROM trips \" +\r\n                \"WHERE departureTime >=\\\"\"+JDBCUtils.dateToSQLFormat((String) infos.get(\"tripDay\"))+\" \"+infos.get(\"departureHour\")+\"\\\"\"+\r\n                \" AND departureTown=\\\"\"+infos.get(\"departureTown\")+\"\\\"\"+\r\n                \" AND arrivalTown=\\\"\"+infos.get(\"arrivalTown\")+\"\\\"\"+\r\n                \" ORDER BY departureTime ASC\";\r\n        Connection connection = JDBCUtils.getConnection();\r\n        Statement st;\r\n        ResultSet rs;\r\n\r\n        try {\r\n            st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);\r\n            rs = st.executeQuery(req);\r\n\r\n            while (rs.next()){\r\n                tripList.add(\r\n                        new Trip(\r\n                                rs.getInt(1),\r\n                                rs.getString(2),\r\n                                rs.getString(3),\r\n                                rs.getString(4),\r\n                                rs.getString(5),\r\n                                rs.getString(6),\r\n                                rs.getInt(7),\r\n                                rs.getInt(8))\r\n                );\r\n            }\r\n\r\n        } catch (SQLException e) {\r\n            e.printStackTrace();\r\n        }finally {\r\n            JDBCUtils.close(connection);\r\n        }\r\n        return tripList;\r\n    }\r\n\r\n\r\n\r\n    @Override\r\n    public String toString() {\r\n        return \"Trip{\" +\r\n                \"tripDay='\" + tripDay + '\\'' +\r\n                \", departureHour='\" + departureHour + '\\'' +\r\n                \", departureTown='\" + departureTown + '\\'' +\r\n                \", arrivalHour='\" + arrivalHour + '\\'' +\r\n                \", arrivalTown='\" + arrivalTown + '\\'' +\r\n                \", price=\" + price +\r\n                '}';\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/tchoutchou/model/Trip.java b/app/src/main/java/com/tchoutchou/model/Trip.java
+--- a/app/src/main/java/com/tchoutchou/model/Trip.java	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/java/com/tchoutchou/model/Trip.java	(date 1646403735109)
+@@ -1,8 +1,11 @@
+ package com.tchoutchou.model;
+ 
++import android.os.Build;
+ import android.os.Bundle;
+ import android.util.Log;
+ 
++import androidx.annotation.RequiresApi;
++
+ import com.tchoutchou.util.JDBCUtils;
+ 
+ import java.sql.Connection;
+@@ -64,6 +67,8 @@
+         return tripTime;
+     }
+ 
++
++    @RequiresApi(api = Build.VERSION_CODES.N)
+     public static List<Trip> getTrips(Bundle infos){
+         List<Trip> tripList = new ArrayList<>();
+         String req = "SELECT trip_id,DATE(departureTime),DATE_FORMAT(departureTime,\"%H:%i\"),departureTown,DATE_FORMAT(arrivalTime,\"%H:%i\"),arrivalTown," +
+@@ -100,20 +105,9 @@
+         }finally {
+             JDBCUtils.close(connection);
+         }
++
+         return tripList;
+     }
+ 
+ 
+-
+-    @Override
+-    public String toString() {
+-        return "Trip{" +
+-                "tripDay='" + tripDay + '\'' +
+-                ", departureHour='" + departureHour + '\'' +
+-                ", departureTown='" + departureTown + '\'' +
+-                ", arrivalHour='" + arrivalHour + '\'' +
+-                ", arrivalTown='" + arrivalTown + '\'' +
+-                ", price=" + price +
+-                '}';
+-    }
+ }
+Index: app/src/main/res/layout/trip_action_bar.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<RelativeLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\">\r\n\r\n    <TextView\r\n        android:id=\"@+id/tripDay\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_centerInParent=\"true\"\r\n        android:textSize=\"18sp\" />\r\n</RelativeLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/trip_action_bar.xml b/app/src/main/res/layout/trip_action_bar.xml
+--- a/app/src/main/res/layout/trip_action_bar.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/res/layout/trip_action_bar.xml	(date 1646494924491)
+@@ -4,7 +4,7 @@
+     android:layout_height="match_parent">
+ 
+     <TextView
+-        android:id="@+id/tripDay"
++        android:id="@+id/tripActionBarText"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_centerInParent="true"
+Index: app/src/main/java/com/tchoutchou/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.tchoutchou;\r\n\r\n\r\nimport android.content.Context;\r\nimport android.os.Bundle;\r\nimport android.os.Handler;\r\nimport android.os.Looper;\r\nimport android.view.View;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.fragment.app.FragmentManager;\r\n\r\nimport com.tchoutchou.fragments.Home;\r\nimport com.tchoutchou.util.MainFragmentReplacement;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n\r\n    private static boolean appIsOpen = false;\r\n    private Handler handler;\r\n    private boolean doubleBackToExitPressedOnce = false;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n\r\n        View loadingScreen = getLayoutInflater().inflate(R.layout.loading_screen, null);\r\n        View main = getLayoutInflater().inflate(R.layout.activity_main, null);\r\n\r\n        getSupportActionBar().hide();\r\n            setContentView(loadingScreen);\r\n            handler = new Handler();\r\n        if (!appIsOpen) {\r\n            Runnable change = () -> setContentView(main);\r\n\r\n            Runnable loading = () -> {\r\n                try {\r\n                    Thread.sleep(3000);\r\n                    handler.post(change);\r\n                } catch (InterruptedException e) {\r\n                    e.printStackTrace();\r\n                }\r\n\r\n            };\r\n\r\n            new Thread(loading).start();\r\n            appIsOpen = true;\r\n        }else{\r\n            setContentView(main);\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public void onBackPressed() {\r\n        FragmentManager fm = getSupportFragmentManager();\r\n        Fragment main = fm.findFragmentById(R.id.main);\r\n\r\n        if(main instanceof Home) {\r\n            if (doubleBackToExitPressedOnce) {\r\n                finish();\r\n            }\r\n            this.doubleBackToExitPressedOnce = true;\r\n            Toast.makeText(this, \"Appuyez encore une fois sur retour pour sortir\", Toast.LENGTH_SHORT).show();\r\n\r\n            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {\r\n\r\n                @Override\r\n                public void run() {\r\n                    doubleBackToExitPressedOnce=false;\r\n                }\r\n            }, 2000);\r\n        }else{\r\n            MainFragmentReplacement.Replace(fm,new Home());\r\n         }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/tchoutchou/MainActivity.java b/app/src/main/java/com/tchoutchou/MainActivity.java
+--- a/app/src/main/java/com/tchoutchou/MainActivity.java	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/java/com/tchoutchou/MainActivity.java	(date 1646488896791)
+@@ -21,6 +21,7 @@
+     private Handler handler;
+     private boolean doubleBackToExitPressedOnce = false;
+ 
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+@@ -36,7 +37,7 @@
+ 
+             Runnable loading = () -> {
+                 try {
+-                    Thread.sleep(3000);
++                    Thread.sleep(5000);
+                     handler.post(change);
+                 } catch (InterruptedException e) {
+                     e.printStackTrace();
+Index: app/src/main/res/layout/activity_rides.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_rides.xml b/app/src/main/res/layout/activity_trips.xml
+rename from app/src/main/res/layout/activity_rides.xml
+rename to app/src/main/res/layout/activity_trips.xml
+--- a/app/src/main/res/layout/activity_rides.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/res/layout/activity_trips.xml	(date 1646504096035)
+@@ -4,13 +4,13 @@
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+-    tools:context=".fragments.UserTickets">
++    tools:context=".fragments.user.UserTickets">
+ 
+ 
+     <ListView
+         android:id="@+id/trips"
+         android:layout_width="match_parent"
+-        android:layout_height="wrap_content"/>
++        android:layout_height="match_parent"/>
+ 
+ 
+ </RelativeLayout>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"DesignSurface\">\r\n    <option name=\"filePathToZoomLevelMap\">\r\n      <map>\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/drawable/ripple.xml\" value=\"0.21979166666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/activity_home.xml\" value=\"0.1\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/activity_main.xml\" value=\"0.20416666666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/activity_rides.xml\" value=\"0.20416666666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_menu.xml\" value=\"0.22\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_trips.xml\" value=\"0.20416666666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_user_account.xml\" value=\"0.20416666666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_user_connection.xml\" value=\"0.19010416666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_user_registration.xml\" value=\"0.20416666666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_user_tickets.xml\" value=\"0.20416666666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/inscription.xml\" value=\"0.1\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/trip_action_bar.xml\" value=\"0.20416666666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/trip_infos.xml\" value=\"0.20416666666666666\" />\r\n        <entry key=\"..\\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/trip_list_layout.xml\" value=\"0.5\" />\r\n        <entry key=\"..\\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout-land/activity_main.xml\" value=\"0.15052083333333333\" />\r\n        <entry key=\"..\\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/activity_main.xml\" value=\"0.1598731884057971\" />\r\n        <entry key=\"..\\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/fragment_offers.xml\" value=\"0.23097826086956522\" />\r\n        <entry key=\"..\\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/fragment_user_account.xml\" value=\"0.1598731884057971\" />\r\n        <entry key=\"..\\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/fragment_user_connection.xml\" value=\"0.1598731884057971\" />\r\n        <entry key=\"..\\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/fragment_user_reductions.xml\" value=\"0.1598731884057971\" />\r\n        <entry key=\"..\\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/fragment_user_registration.xml\" value=\"0.1598731884057971\" />\r\n        <entry key=\"..\\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/inscription.xml\" value=\"0.16666666666666666\" />\r\n        <entry key=\"..\\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/user_reductions.xml\" value=\"0.264\" />\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_11\" default=\"true\" project-jdk-name=\"Android Studio default JDK\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\r\n  </component>\r\n  <component name=\"ProjectType\">\r\n    <option name=\"id\" value=\"Android\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/.idea/misc.xml	(date 1646506938037)
+@@ -7,16 +7,18 @@
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/activity_home.xml" value="0.1" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/activity_main.xml" value="0.20416666666666666" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/activity_rides.xml" value="0.20416666666666666" />
++        <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_home.xml" value="0.25" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_menu.xml" value="0.22" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_trips.xml" value="0.20416666666666666" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_user_account.xml" value="0.20416666666666666" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_user_connection.xml" value="0.19010416666666666" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_user_registration.xml" value="0.20416666666666666" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_user_tickets.xml" value="0.20416666666666666" />
++        <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/fragment_user_tickets_list.xml" value="0.19010416666666666" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/inscription.xml" value="0.1" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/trip_action_bar.xml" value="0.20416666666666666" />
+         <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/trip_infos.xml" value="0.20416666666666666" />
+-        <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/trip_list_layout.xml" value="0.5" />
++        <entry key="..\:/Users/ludov/Desktop/Projets/TchouTchou/app/src/main/res/layout/trip_list_layout.xml" value="0.33" />
+         <entry key="..\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout-land/activity_main.xml" value="0.15052083333333333" />
+         <entry key="..\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/activity_main.xml" value="0.1598731884057971" />
+         <entry key="..\:/Users/paulr/AndroidStudioProjects/SLCB/app/src/main/res/layout/fragment_offers.xml" value="0.23097826086956522" />
+Index: build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// Top-level build file where you can add configuration options common to all sub-projects/modules.\r\nbuildscript {\r\n    repositories {\r\n        google()\r\n        mavenCentral()\r\n    }\r\n    dependencies {\r\n        classpath \"com.android.tools.build:gradle:7.0.4\"\r\n\r\n        // NOTE: Do not place your application dependencies here; they belong\r\n        // in the individual module build.gradle files\r\n    }\r\n}\r\n\r\ntask clean(type: Delete) {\r\n    delete rootProject.buildDir\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.gradle b/build.gradle
+--- a/build.gradle	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/build.gradle	(date 1646431675128)
+@@ -6,6 +6,7 @@
+     }
+     dependencies {
+         classpath "com.android.tools.build:gradle:7.0.4"
++        classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.0"
+ 
+         // NOTE: Do not place your application dependencies here; they belong
+         // in the individual module build.gradle files
+Index: app/src/main/res/layout/trip_list_layout.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<RelativeLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\">\r\n\r\n    <TextView\r\n        android:id=\"@+id/tripDay\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_above=\"@id/price\"\r\n        android:layout_alignParentEnd=\"true\"\r\n        android:text=\"TextView\" />\r\n\r\n    <RelativeLayout\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_centerVertical=\"true\"\r\n        android:layout_alignParentStart=\"true\">\r\n\r\n        <TextView\r\n            android:id=\"@+id/departureHour\"\r\n            android:layout_width=\"85dp\"\r\n            android:layout_height=\"55dp\"\r\n            android:textSize=\"15sp\"\r\n            android:gravity=\"center\"\r\n            android:layout_alignParentStart=\"true\"\r\n            android:text=\"00:00\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/departureTown\"\r\n            android:layout_width=\"250dp\"\r\n            android:layout_height=\"55dp\"\r\n            android:textSize=\"18sp\"\r\n            android:gravity=\"center_vertical\"\r\n            android:layout_toEndOf=\"@id/departureHour\"\r\n            android:text=\"TextView\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/arrivalHour\"\r\n            android:layout_width=\"85dp\"\r\n            android:layout_height=\"55dp\"\r\n            android:textSize=\"15sp\"\r\n            android:layout_below=\"@id/departureHour\"\r\n            android:layout_alignParentStart=\"true\"\r\n            android:gravity=\"center\"\r\n            android:text=\"00:00\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/arrivalTown\"\r\n            android:layout_width=\"250dp\"\r\n            android:layout_height=\"55dp\"\r\n            android:textSize=\"18sp\"\r\n            android:gravity=\"center_vertical\"\r\n            android:layout_alignBottom=\"@id/arrivalHour\"\r\n            android:layout_toEndOf=\"@id/arrivalHour\"\r\n            android:text=\"TextView\" />\r\n\r\n    </RelativeLayout>\r\n\r\n    <TextView\r\n        android:id=\"@+id/price\"\r\n        android:layout_width=\"70dp\"\r\n        android:layout_height=\"73dp\"\r\n        android:layout_alignParentEnd=\"true\"\r\n        android:layout_centerInParent=\"true\"\r\n        android:gravity=\"center\"\r\n        android:text=\"X €\"\r\n        android:textSize=\"25sp\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/tripTime\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_below=\"@id/price\"\r\n        android:layout_alignParentEnd=\"true\"\r\n        android:layout_marginEnd=\"10dp\"\r\n        android:layout_marginTop=\"20dp\"\r\n        android:text=\"X min\"\r\n        android:textSize=\"12sp\" />\r\n\r\n\r\n</RelativeLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/trip_list_layout.xml b/app/src/main/res/layout/trip_list_layout.xml
+--- a/app/src/main/res/layout/trip_list_layout.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/res/layout/trip_list_layout.xml	(date 1646499523105)
+@@ -3,15 +3,8 @@
+     android:layout_width="match_parent"
+     android:layout_height="match_parent">
+ 
+-    <TextView
+-        android:id="@+id/tripDay"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:layout_above="@id/price"
+-        android:layout_alignParentEnd="true"
+-        android:text="TextView" />
+-
+     <RelativeLayout
++        android:id="@+id/tripInfosBox"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_centerVertical="true"
+@@ -57,15 +50,27 @@
+ 
+     </RelativeLayout>
+ 
++    <TextView
++        android:id="@+id/tripDay"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:layout_above="@id/price"
++        android:layout_alignParentEnd="true"
++        android:layout_marginTop="10dp"
++        android:layout_toEndOf="@id/tripInfosBox"
++        android:textSize="18sp"
++        android:text="TextView" />
++
+     <TextView
+         android:id="@+id/price"
+-        android:layout_width="70dp"
+-        android:layout_height="73dp"
++        android:layout_width="60dp"
++        android:layout_height="60dp"
+         android:layout_alignParentEnd="true"
+-        android:layout_centerInParent="true"
++        android:layout_centerVertical="true"
++        android:layout_marginEnd="5dp"
+         android:gravity="center"
+         android:text="X €"
+-        android:textSize="25sp" />
++        android:textSize="20sp" />
+ 
+     <TextView
+         android:id="@+id/tripTime"
+@@ -74,9 +79,10 @@
+         android:layout_below="@id/price"
+         android:layout_alignParentEnd="true"
+         android:layout_marginEnd="10dp"
+-        android:layout_marginTop="20dp"
++        android:layout_alignBottom="@id/tripInfosBox"
+         android:text="X min"
+-        android:textSize="12sp" />
++        android:layout_marginTop="15dp"
++        android:textSize="15sp" />
+ 
+ 
+ </RelativeLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/tchoutchou/fragments/Offers.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.tchoutchou.fragments;\r\n\r\nimport android.content.Context;\r\nimport android.content.SharedPreferences;\r\nimport android.os.Bundle;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Button;\r\nimport android.widget.RadioButton;\r\nimport android.widget.RadioGroup;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.fragment.app.Fragment;\r\n\r\nimport com.tchoutchou.R;\r\nimport com.tchoutchou.fragments.user.UserAccount;\r\n\r\npublic class Offers extends Fragment {\r\n\r\n    Button boutonSave;\r\n    RadioButton boutonJeunes;\r\n    RadioButton boutonVieux;\r\n    RadioGroup radioGroup;\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n    }\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        View root = inflater.inflate(R.layout.fragment_user_registration, container, false);\r\n        SharedPreferences preferences = requireActivity().getSharedPreferences(\"userInfos\", Context.MODE_PRIVATE);\r\n\r\n        this.boutonSave = root.findViewById(R.id.boutonSave);\r\n        this.boutonJeunes = root.findViewById(R.id.boutonJeunes);\r\n        this.boutonVieux = root.findViewById(R.id.boutonVieux);\r\n        this.radioGroup = root.findViewById(R.id.listeRadioButton);\r\n\r\n        boutonSave.setOnClickListener(new Button.OnClickListener(){\r\n            @Override\r\n            public void onClick(View v) {\r\n                doSave(root);\r\n            };\r\n        });\r\n\r\n        return root;\r\n    }\r\n\r\n    public void doSave(View root) {\r\n        int verify = this.radioGroup.getCheckedRadioButtonId();\r\n        TextView cartes = root.findViewById(R.id.carte);\r\n        RadioButton which = (RadioButton) root.findViewById(verify);\r\n\r\n        int age = UserAccount.getAge();\r\n        if(age>= 18 && age <=25 && which==boutonJeunes) {\r\n            cartes.setText(\"Carte jeunes\");\r\n        } else if(age>=60 && which==boutonVieux) {\r\n            cartes.setText(\"Carte sénior\");\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/tchoutchou/fragments/Offers.java b/app/src/main/java/com/tchoutchou/fragments/Offers.java
+--- a/app/src/main/java/com/tchoutchou/fragments/Offers.java	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/java/com/tchoutchou/fragments/Offers.java	(date 1646335882316)
+@@ -31,7 +31,7 @@
+     @Override
+     public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState) {
+-        View root = inflater.inflate(R.layout.fragment_user_registration, container, false);
++        View root = inflater.inflate(R.layout.fragment_offers, container, false);
+         SharedPreferences preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
+ 
+         this.boutonSave = root.findViewById(R.id.boutonSave);
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <string name=\"app_name\" translatable=\"false\">SLCB</string>\r\n    <!-- TODO: Remove or change this placeholder text -->\r\n    <string name=\"hello_blank_fragment\">Coucou fragment vide</string>\r\n    <string name=\"trip_action_bar_text\">Bus disponibles à partir du</string>\r\n    <string name=\"trip_action_bar_at\"> à </string>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+--- a/app/src/main/res/values/strings.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/res/values/strings.xml	(date 1646490345345)
+@@ -1,7 +1,7 @@
+ <resources>
+     <string name="app_name" translatable="false">SLCB</string>
+-    <!-- TODO: Remove or change this placeholder text -->
++
+     <string name="hello_blank_fragment">Coucou fragment vide</string>
+     <string name="trip_action_bar_text">Bus disponibles à partir du</string>
+-    <string name="trip_action_bar_at"> à </string>
++    <string name="at"> à </string>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    package=\"com.tchoutchou\">\r\n\r\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\r\n    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\r\n    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />\r\n    <uses-permission android:name=\"android.permission.INTERNET\" />\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.SLCB\">\r\n\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n                <action android:name=\"android.intent.action.VIEW\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n        <activity\r\n            android:name=\".TripActivity\"\r\n            android:exported=\"false\"\r\n            android:parentActivityName=\"com.tchoutchou.MainActivity\"/>\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/src/main/AndroidManifest.xml	(date 1646488896891)
+@@ -3,11 +3,9 @@
+     xmlns:tools="http://schemas.android.com/tools"
+     package="com.tchoutchou">
+ 
++    <!--Permission-->
+     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+     <uses-permission android:name="android.permission.INTERNET" />
+ 
+     <application
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    id 'com.android.application'\r\n}\r\n\r\nandroid {\r\n    compileSdk 32\r\n\r\n    defaultConfig {\r\n        applicationId \"com.tchoutchou\"\r\n        minSdk 21\r\n        targetSdk 32\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility JavaVersion.VERSION_1_8\r\n        targetCompatibility JavaVersion.VERSION_1_8\r\n    }\r\n}\r\n\r\ndependencies {\r\n\r\n    implementation 'androidx.appcompat:appcompat:1.4.1'\r\n    implementation 'com.google.android.material:material:1.5.0'\r\n    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'\r\n    implementation 'androidx.legacy:legacy-support-v4:1.0.0'\r\n    implementation files('../libs/mysql-connector-java-5.1.49.jar')\r\n    implementation 'com.google.android.gms:play-services-maps:18.0.2'\r\n    testImplementation 'junit:junit:'\r\n    androidTestImplementation 'androidx.test.ext:junit:1.1.3'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle b/app/build.gradle
+--- a/app/build.gradle	(revision 7faba05a09fce7020b0b3a6bbdd9c409311d2115)
++++ b/app/build.gradle	(date 1646506883057)
+@@ -25,6 +25,9 @@
+         sourceCompatibility JavaVersion.VERSION_1_8
+         targetCompatibility JavaVersion.VERSION_1_8
+     }
++    buildFeatures {
++        viewBinding true
++    }
+ }
+ 
+ dependencies {
+@@ -34,7 +37,7 @@
+     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+     implementation files('../libs/mysql-connector-java-5.1.49.jar')
+-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
++    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+     testImplementation 'junit:junit:'
+     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

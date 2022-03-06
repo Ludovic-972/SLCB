@@ -43,15 +43,15 @@ public class Menu extends Fragment {
         ImageButton toAccount = root.findViewById(R.id.accountPageButton);
 
 
-        toHomePage.setOnClickListener(view -> MainFragmentReplacement.Replace(fragmentManager,new Home()));
+        toHomePage.setOnClickListener(view -> MainFragmentReplacement.replace(fragmentManager,new Home()));
 
-        toTickets.setOnClickListener(view -> MainFragmentReplacement.Replace(fragmentManager,new UserTickets()));
+        toTickets.setOnClickListener(view -> MainFragmentReplacement.replace(fragmentManager,new UserTickets()));
 
         toAccount.setOnClickListener(view -> {
             if(preferences.getString("mail", "").equals(""))
-                MainFragmentReplacement.Replace(fragmentManager,new UserConnection());
+                MainFragmentReplacement.replace(fragmentManager,new UserConnection());
             else
-                MainFragmentReplacement.Replace(fragmentManager,new UserAccount());
+                MainFragmentReplacement.replace(fragmentManager,new UserAccount());
         });
 
         return root;

@@ -1,7 +1,10 @@
 package com.tchoutchou.model;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.tchoutchou.util.JDBCUtils;
 
@@ -64,6 +67,8 @@ public class Trip {
         return tripTime;
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<Trip> getTrips(Bundle infos){
         List<Trip> tripList = new ArrayList<>();
         String req = "SELECT trip_id,DATE(departureTime),DATE_FORMAT(departureTime,\"%H:%i\"),departureTown,DATE_FORMAT(arrivalTime,\"%H:%i\"),arrivalTown," +
@@ -74,12 +79,11 @@ public class Trip {
                 " AND arrivalTown=\""+infos.get("arrivalTown")+"\""+
                 " ORDER BY departureTime ASC";
         Connection connection = JDBCUtils.getConnection();
-        Statement st;
-        ResultSet rs;
+
 
         try {
-            st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-            rs = st.executeQuery(req);
+            Statement st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = st.executeQuery(req);
 
             while (rs.next()){
                 tripList.add(
@@ -100,20 +104,45 @@ public class Trip {
         }finally {
             JDBCUtils.close(connection);
         }
+
         return tripList;
     }
 
 
+    public static List<Trip> getUserTrips(int userId){
+        List<Trip> tripList = new ArrayList<>();
+        String req = "SELECT T.trip_id,DATE(departureTime),DATE_FORMAT(departureTime,\"%H:%i\"),departureTown,DATE_FORMAT(arrivalTime,\"%H:%i\"),arrivalTown," +
+                "price,TIMESTAMPDIFF(MINUTE,departureTime,arrivalTime) " +
+                "FROM trips T,userTrips U " +
+                "WHERE T.trip_id = U.trip_id AND U.user_id =" +userId+
+                " ORDER BY T.trip_id ASC";
+        Log.d("ExtDb",req);
+        Connection connection = JDBCUtils.getConnection();
 
-    @Override
-    public String toString() {
-        return "Trip{" +
-                "tripDay='" + tripDay + '\'' +
-                ", departureHour='" + departureHour + '\'' +
-                ", departureTown='" + departureTown + '\'' +
-                ", arrivalHour='" + arrivalHour + '\'' +
-                ", arrivalTown='" + arrivalTown + '\'' +
-                ", price=" + price +
-                '}';
+        try {
+            Statement st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = st.executeQuery(req);
+
+            while (rs.next()){
+                tripList.add(
+                        new Trip(
+                                rs.getInt(1),
+                                rs.getString(2),
+                                rs.getString(3),
+                                rs.getString(4),
+                                rs.getString(5),
+                                rs.getString(6),
+                                rs.getInt(7),
+                                rs.getInt(8))
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            JDBCUtils.close(connection);
+        }
+
+        return tripList;
     }
 }

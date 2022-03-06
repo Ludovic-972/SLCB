@@ -12,7 +12,7 @@ import com.tchoutchou.R;
 public class MainFragmentReplacement {
     private MainFragmentReplacement(){}
 
-    public static void Replace(FragmentManager fragmentManager,Fragment frag){
+    public static void replace(FragmentManager fragmentManager, Fragment frag){
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.main);
         if(!frag.getClass().toString().equals(currentFragment.getTag())) {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

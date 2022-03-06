@@ -20,14 +20,15 @@ import com.tchoutchou.model.User;
 import com.tchoutchou.util.InexistantUserException;
 import com.tchoutchou.util.MainFragmentReplacement;
 
-import java.util.List;
+import java.util.Locale;
 
 
 public class UserConnection extends Fragment {
 
 
     private User user;
-    boolean registered;
+    private boolean registered;
+    EditText mail,mdp;
 
     public UserConnection() {
     }
@@ -45,8 +46,8 @@ public class UserConnection extends Fragment {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
 
-        EditText mail = root.findViewById(R.id.mail);
-        EditText mdp = root.findViewById(R.id.password);
+        mail = root.findViewById(R.id.mail);
+        mdp = root.findViewById(R.id.password);
 
         Button login = root.findViewById(R.id.login);
         login.setOnClickListener(view -> {
@@ -54,39 +55,44 @@ public class UserConnection extends Fragment {
             String passwordText = mdp.getText().toString();
 
             if (!loginText.equals("") && !passwordText.equals("")) {
-                registered = false;
-                Thread verify = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            user = User.getInformationsFromDB(loginText, passwordText);
-                            registered = true;
-                        } catch (InexistantUserException e) {
-                            e.printStackTrace();
+                if(validMail()) {
+                    registered = false;
+                    Thread verify = new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                                user = User.getInformationsFromDB(loginText, passwordText);
+                                registered = true;
+                            } catch (InexistantUserException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                };
-                verify.start();
+                    };
+                    verify.start();
 
-                try {
-                    verify.join();
-                    if (!registered)
-                        Toast.makeText(requireContext(), "Login ou mot de passe incorrecte", Toast.LENGTH_SHORT).show();
-                    else {
-                        editor.putInt("id", user.getId());
-                        editor.putString("lastname", user.getLastname());
-                        editor.putString("firstname", user.getFirstname());
-                        editor.putString("mail", user.getMail());
-                        editor.putString("birthdate", user.getBirthdate());
-                        editor.putString("phoneNumber", user.getPhoneNumber());
-                        editor.putString("password", user.getPassword());
+                    try {
+                        verify.join();
+                        if (!registered) {
+                            Toast.makeText(requireContext(), "Login ou mot de passe incorrecte", Toast.LENGTH_SHORT).show();
+                            mdp.setText("");
+                        }else {
+                            editor.putInt("userId", user.getId());
+                            editor.putString("lastname", user.getLastname());
+                            editor.putString("firstname", user.getFirstname());
+                            editor.putString("mail", user.getMail());
+                            editor.putString("birthdate", user.getBirthdate());
+                            editor.putString("phoneNumber", user.getPhoneNumber());
+                            editor.putString("password", user.getPassword());
 
-                        editor.apply();
-                        Toast.makeText(requireContext(), "Content de vous revoir !", Toast.LENGTH_SHORT).show();
-                        MainFragmentReplacement.Replace(fragmentManager, new Home());
+                            editor.apply();
+                            Toast.makeText(requireContext(), "Content de vous revoir " + user.getFirstname() + " !", Toast.LENGTH_SHORT).show();
+                            MainFragmentReplacement.replace(fragmentManager, new Home());
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                }else{
+                    Toast.makeText(requireContext(), "Email invalide", Toast.LENGTH_SHORT).show();
                 }
             } else
                 Toast.makeText(requireContext(), "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
@@ -95,7 +101,11 @@ public class UserConnection extends Fragment {
         });
 
         Button register = root.findViewById(R.id.register);
-        register.setOnClickListener(view -> MainFragmentReplacement.Replace(fragmentManager, new UserRegistration()));
+        register.setOnClickListener(view -> MainFragmentReplacement.replace(fragmentManager, new UserRegistration()));
         return root;
+    }
+
+    private boolean validMail(){
+        return mail.getText().toString().toLowerCase(Locale.ROOT).matches("^[a-z0-9.-]+@[a-z.-]+\\.[a-z]{2,}");
     }
 }

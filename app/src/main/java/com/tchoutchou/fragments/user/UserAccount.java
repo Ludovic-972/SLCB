@@ -52,7 +52,7 @@ public class UserAccount extends Fragment {
         Button deconnection = root.findViewById(R.id.deconnection);
         deconnection.setOnClickListener(view -> {
             preferences.edit().clear().apply();
-            MainFragmentReplacement.Replace(fragmentManager,new Home());
+            MainFragmentReplacement.replace(fragmentManager,new Home());
         });
 
         return root;

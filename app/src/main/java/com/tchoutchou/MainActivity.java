@@ -1,7 +1,6 @@
 package com.tchoutchou;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler;
     private boolean doubleBackToExitPressedOnce = false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
             Runnable loading = () -> {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(7000);
                     handler.post(change);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 2000);
         }else{
-            MainFragmentReplacement.Replace(fm,new Home());
+            MainFragmentReplacement.replace(fm,new Home());
          }
     }
 }

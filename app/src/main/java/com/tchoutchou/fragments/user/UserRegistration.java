@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import com.tchoutchou.model.User;
 import com.tchoutchou.util.MainFragmentReplacement;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 
 public class UserRegistration extends Fragment {
@@ -49,53 +49,57 @@ public class UserRegistration extends Fragment {
 
         Button register = root.findViewById(R.id.inscrire);
         register.setOnClickListener(view -> {
-            if (!noEmptyInputs()){
+            if (!verifyInputs()){
                 Toast.makeText(requireContext(), "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
-            }else{
-                Thread registration = new Thread(){
+            }else {
+                if (!validMail()) {
+                    Thread registration = new Thread() {
 
-                    @Override
-                    public void run() {
-                        user = User.addUser(
-                                nom.getText().toString(),prenom.getText().toString(),
-                                mail.getText().toString(),anniversaire.getText().toString(),
-                                numero.getText().toString(),mdp.getText().toString());
+                        @Override
+                        public void run() {
+                            user = User.addUser(
+                                    nom.getText().toString(), prenom.getText().toString(),
+                                    mail.getText().toString().toLowerCase(Locale.ROOT), anniversaire.getText().toString(),
+                                    numero.getText().toString(), mdp.getText().toString());
 
-                        
+
+                        }
+                    };
+
+                    registration.start();
+
+                    try {
+                        registration.join();
+                        if (user != null) {
+                            Toast.makeText(requireContext(), "Bienvenue chez nous !", Toast.LENGTH_LONG).show();
+                            SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                            editor.putInt("userId", user.getId());
+                            editor.putString("lastname", user.getLastname());
+                            editor.putString("firstname", user.getFirstname());
+                            editor.putString("mail", user.getMail());
+                            editor.putString("birthdate", user.getBirthdate());
+                            editor.putString("phoneNumber", user.getPhoneNumber());
+                            editor.putString("password", user.getPassword());
+
+                            editor.apply();
+                            nom.setText("");
+                            prenom.setText("");
+                            mail.setText("");
+                            anniversaire.setText("");
+                            numero.setText("");
+                            mdp.setText("");
+                            MainFragmentReplacement.replace(requireActivity().getSupportFragmentManager(), new Home());
+                        } else
+                            Toast.makeText(requireContext(), "Inscription impossible,cet email est déjà utilisée.", Toast.LENGTH_SHORT).show();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                };
 
-                registration.start();
-
-                try {
-                    registration.join();
-                    if (user != null) {
-                        Toast.makeText(requireContext(), "Bienvenue chez nous !", Toast.LENGTH_LONG).show();
-                        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                        editor.putInt("id", user.getId());
-                        editor.putString("lastname", user.getLastname());
-                        editor.putString("firstname", user.getFirstname());
-                        editor.putString("mail", user.getMail());
-                        editor.putString("birthdate", user.getBirthdate());
-                        editor.putString("phoneNumber", user.getPhoneNumber());
-                        editor.putString("password", user.getPassword());
-
-                        editor.apply();
-                        nom.setText("");
-                        prenom.setText("");
-                        mail.setText("");
-                        anniversaire.setText("");
-                        numero.setText("");
-                        mdp.setText("");
-                        MainFragmentReplacement.Replace(requireActivity().getSupportFragmentManager(), new Home());
-                    }else
-                        Toast.makeText(requireContext(), "Inscription impossible,cet email est déjà utilisée.", Toast.LENGTH_SHORT).show();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                }else{
+                    Toast.makeText(requireContext(), "Email invalide", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
 
@@ -111,8 +115,8 @@ public class UserRegistration extends Fragment {
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
                         String date = "";
-                        date+= (dayOfMonth<10) ? "0"+(dayOfMonth+1)+"-" : (dayOfMonth+1)+"-";
-                        date+= (monthOfYear<10) ? "0"+monthOfYear+"-" : monthOfYear+"-";
+                        date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
+                        date+= (monthOfYear<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
                         date+= year;
                         anniversaire.setText(date);
                     }
@@ -127,10 +131,14 @@ public class UserRegistration extends Fragment {
     }
 
 
-    private boolean noEmptyInputs() {
+    private boolean verifyInputs() {
         return !nom.getText().toString().equals("") && !prenom.getText().toString().equals("")
                 && !mail.getText().toString().equals("") && !anniversaire.getText().toString().equals("")
                 && !numero.getText().toString().equals("") && !mdp.getText().toString().equals("");
+    }
+
+    private boolean validMail(){
+        return mail.getText().toString().toLowerCase(Locale.ROOT).matches("^[a-z0-9.-]+@[a-z.-]+\\.[a-z]{2,}");
     }
 
 }
