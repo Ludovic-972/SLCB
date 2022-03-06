@@ -18,7 +18,12 @@ import com.tchoutchou.R;
 import com.tchoutchou.fragments.Home;
 import com.tchoutchou.util.MainFragmentReplacement;
 
+import java.time.LocalDate;
+import java.time.Month;
+
 public class UserAccount extends Fragment {
+
+    static int age;
 
     public UserAccount(){}
 
@@ -33,13 +38,18 @@ public class UserAccount extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_user_account, container, false);
         SharedPreferences preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
+
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
 
         TextView infos = root.findViewById(R.id.informations);
         String userName = preferences.getString("lastname", "");
         String userFirstname = preferences.getString("firstname", "");
-        String userBirthday = preferences.getString("birthdate", "");
-        infos.setText(userFirstname + " " + userName + ", né le " + userBirthday);
+        String dateNaissance = preferences.getString("birthdate", "");
+        String[] detailDate = dateNaissance.split("-");
+        LocalDate dateOfBirth = LocalDate.of(Integer.parseInt(detailDate[2]), Month.valueOf(detailDate[1]), Integer.parseInt(detailDate[0]));
+        LocalDate now = LocalDate.now();
+        age = dateOfBirth.until(now).getYears();
+        infos.setText(userFirstname + " " + userName + ", " + age + " ans");
 
         TextView adresseMail = root.findViewById(R.id.adresseMail);
         String userMail = preferences.getString("mail", "");
@@ -56,6 +66,10 @@ public class UserAccount extends Fragment {
         });
 
         return root;
+    }
+
+    public static int getAge() {
+        return age;
     }
 
 }
