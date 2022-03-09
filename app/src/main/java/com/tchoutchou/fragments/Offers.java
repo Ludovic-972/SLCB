@@ -54,9 +54,9 @@ public class Offers extends Fragment {
 
         int age = UserAccount.getAge();
         if(age>=18 && age<=25 && which==boutonJeunes) {
-            cartes.setText("Carte jeunes");
+            UserAccount.setReduction("Carte jeune");
         } else if(age>=60 && which==boutonVieux) {
-            cartes.setText("Carte sénior");
+            UserAccount.setReduction("Carte sénior");
         }
     }
 }

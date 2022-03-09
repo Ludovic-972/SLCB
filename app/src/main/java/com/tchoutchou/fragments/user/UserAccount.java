@@ -23,6 +23,7 @@ import java.time.LocalDate;
 public class UserAccount extends Fragment {
 
     static int age;
+    static TextView cartes;
 
     public UserAccount(){}
 
@@ -60,6 +61,8 @@ public class UserAccount extends Fragment {
         String userPhone = preferences.getString("phoneNumber", "");
         tel.setText("Numero de téléphone : " + userPhone);
 
+        cartes = root.findViewById(R.id.carte);
+
         Button deconnection = root.findViewById(R.id.deconnection);
         deconnection.setOnClickListener(view -> {
             preferences.edit().clear().apply();
@@ -70,5 +73,9 @@ public class UserAccount extends Fragment {
     }
 
     static public int getAge() {return age;}
+
+    static public void setReduction(String string) {
+        cartes.setText(string);
+    }
 
 }
