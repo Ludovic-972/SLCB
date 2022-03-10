@@ -12,16 +12,9 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-
-import android.util.Log;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +26,17 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
+import com.tchoutchou.MainActivity;
+import com.tchoutchou.NoConnectionActivity;
 import com.tchoutchou.R;
 import com.tchoutchou.TripActivity;
 import com.tchoutchou.model.Towns;
 import com.tchoutchou.util.MainFragmentReplacement;
+import com.tchoutchou.util.NoConnectionException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,29 +55,28 @@ public class Home extends Fragment implements LocationListener {
     }
 
 
-    private SharedPreferences preferences;
     private List<String> towns = new ArrayList<>();
     private LocationManager locationManager;
     private EditText tripDay,departureHour;
     private AutoCompleteTextView departureTown,arrivalTown;
-    private Button goToRides;
-    private ImageButton userLocation;
     private double latitude;
     private double longitude;
+    private String cityName;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
+        SharedPreferences preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
 
+        cityName = "";
         tripDay = root.findViewById(R.id.tripDate);
         departureHour = root.findViewById(R.id.departureHour);
         departureTown = root.findViewById(R.id.departureTown);
-        userLocation = root.findViewById(R.id.userLocation);
+        ImageButton userLocation = root.findViewById(R.id.userLocation);
         arrivalTown = root.findViewById(R.id.arrivalTown);
-        goToRides = root.findViewById(R.id.toRides);
+        Button goToRides = root.findViewById(R.id.toRides);
 
         TextView greetings = root.findViewById(R.id.greetings);
         String username = preferences.getString("firstname","");
@@ -89,7 +88,12 @@ public class Home extends Fragment implements LocationListener {
         Thread townsRecuperation = new Thread(){
             @Override
             public void run() {
-                towns = Towns.getAllTowns();
+                try {
+                    towns = Towns.getAllTowns();
+                } catch (NoConnectionException e) {
+                    Intent intent = new Intent(requireActivity(), NoConnectionActivity.class);
+                    startActivity(intent);
+                }
             }
         };
         townsRecuperation.start();
@@ -149,7 +153,7 @@ public class Home extends Fragment implements LocationListener {
                 }
             }
         });
-        
+
 
         goToRides.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,61 +199,97 @@ public class Home extends Fragment implements LocationListener {
         return root;
     }
 
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        this.longitude = location.getLongitude();
+        this.latitude = location.getLatitude();
+    }
+
     private void showLocation(){
-        String cityName = "";
-        Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
-        List<Address> adresses;
+        if (gpsOn()) {
+            Toast.makeText(requireContext(), "Patientez...", Toast.LENGTH_LONG).show();
+            Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+            List<Address> adresses;
 
-        try{
-            adresses = geocoder.getFromLocation(latitude,longitude,10);
+            try {
+                adresses = geocoder.getFromLocation(latitude, longitude, 10);
+                Handler handler = new Handler();
 
-            if (adresses.size() > 0){
-                for (Address adr : adresses){
-                    if (adr.getLocality() != null && adr.getLocality().length() >0){
-                        cityName = adr.getLocality();
-                        break;
+                new Thread(){
+                    @Override
+                    public void run() {
+                        if (adresses.size() > 0) {
+                            for (Address adr : adresses) {
+                                if (adr.getLocality() != null && adr.getLocality().length() > 0) {
+                                    cityName = adr.getLocality();
+                                    break;
+                                }
+                            }
+                        }
+                        if (!cityName.equals("")) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+                            String finalCityName = cityName;
+                            builder.setTitle("Localisation")
+                                    .setCancelable(false)
+                                    .setMessage(getString(R.string.show_location_1) + " " + cityName + "." + getString(R.string.show_location_2))
+                                    .setNegativeButton("Non", (dialog, i) -> dialog.dismiss())
+                                    .setPositiveButton("Oui", ((dialog, i) -> {
+                                        departureTown.setText(finalCityName);
+                                        dialog.dismiss();
+                                    }));
+                            handler.post(() -> {
+                                AlertDialog alert = builder.create();
+                                alert.show();
+                            });
+                        }else{
+                            handler.post(() -> Toast.makeText(requireContext(), "Erreur de récupération de position\nVeuillez rééssayer", Toast.LENGTH_SHORT).show());
+                        }
                     }
-                }
+                }.start();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-
-            String finalCityName = cityName;
-            builder.setTitle("Localisation")
-                    .setCancelable(false)
-                    .setMessage(getString(R.string.show_location_1)+" "+cityName+"."+getString(R.string.show_location_2))
-                    .setNegativeButton("Non",(dialog,i) -> dialog.dismiss())
-                    .setPositiveButton("Oui", ((dialog, i) -> {
-                        departureTown.setText(finalCityName);
-                        dialog.dismiss();
-                    }));
-            AlertDialog alert = builder.create();
-            alert.show();
-        }catch (IOException e){
-            e.printStackTrace();
         }
-
-
     }
 
     private boolean isNetworkConnected(){
-        try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo[] networkInfo = null;
+        return false;
+    }
 
-            if (connectivityManager != null) {
-                networkInfo = connectivityManager.getAllNetworkInfo();
-            }
-            Log.d("InternetConnection","Device is connected to Internet");
-            return networkInfo != null & networkInfo[0].isConnected();
-        }catch(NullPointerException e){
-            Log.e("InternetConnection","Device is not connected to Internet");
-            return false;
+    private boolean gpsOn(){
+        LocationManager lm = (LocationManager)requireContext().getSystemService(Context.LOCATION_SERVICE);
+        boolean gps_enabled = false;
+
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(AssertionError ignored) {}
+
+        if(!gps_enabled){
+            Toast.makeText(requireContext(),"Veuillez activer la localisation",Toast.LENGTH_LONG).show();
         }
+
+
+        return gps_enabled;
     }
 
     @Override
-    public void onLocationChanged(@NonNull Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putDouble("longitude", longitude);
+        outState.putDouble("latitude", latitude);
+        outState.putString("lastKnownLocation",cityName);
     }
+
+    @Override
+    public void onViewStateRestored(Bundle inState) {
+        super.onViewStateRestored(inState);
+        if(inState!=null) {
+            this.longitude = (inState.getDouble("longitude", 0));
+            this.latitude = (inState.getDouble("latitude", 0));
+            this.cityName = (inState.getString("lastKnownLocation", ""));
+        }
+
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.tchoutchou;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,12 +16,13 @@ import androidx.fragment.app.FragmentManager;
 import com.tchoutchou.fragments.Home;
 import com.tchoutchou.fragments.user.UserTickets;
 import com.tchoutchou.model.Trip;
+import com.tchoutchou.util.JDBCUtils;
 import com.tchoutchou.util.MainFragmentReplacement;
+import com.tchoutchou.util.NoConnectionException;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private static boolean appIsOpen = false;
     private boolean doubleBackToExitPressedOnce = false;
     private FragmentManager fm;
     private Fragment mainFragment;
@@ -28,31 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        View loadingScreen = getLayoutInflater().inflate(R.layout.loading_screen, null);
-        View mainView = getLayoutInflater().inflate(R.layout.activity_main, null);
-
-        setContentView(loadingScreen);
-        Handler handler = new Handler();
-        if (!appIsOpen) {
-            Runnable change = () -> setContentView(mainView);
-
-            Runnable loading = () -> {
-                try {
-                    Thread.sleep(3000);
-                    Trip.clean();
-                    handler.post(change);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            };
-
-            new Thread(loading).start();
-            appIsOpen = true;
-        }else{
-            setContentView(mainView);
-        }
+        setContentView(R.layout.activity_main);
 
         fm = getSupportFragmentManager();
         mainFragment = fm.findFragmentById(R.id.main);

@@ -1,8 +1,9 @@
 package com.tchoutchou.model;
 
-import android.util.Log;
+import android.app.Activity;
 
 import com.tchoutchou.util.JDBCUtils;
+import com.tchoutchou.util.NoConnectionException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -18,7 +19,7 @@ public class Tickets {
     private Tickets(){}
 
 
-    public static void addTickets(int userId, int tripId){
+    public static void addTickets(int userId, int tripId) throws NoConnectionException {
         Connection connection = JDBCUtils.getConnection();
         String req = "Insert into tickets (user_id,trip_id) values ("+
                 userId+","+
@@ -36,7 +37,7 @@ public class Tickets {
 
     }
 
-    public static List<Integer> getAllUserTickets(int userId){
+    public static List<Integer> getAllUserTickets(int userId) throws NoConnectionException {
         List<Integer> ticketList = new ArrayList<>();
 
         String req = "SELECT trip_id FROM tickets WHERE user_id ="+userId;
@@ -58,11 +59,11 @@ public class Tickets {
         return  ticketList;
     }
 
-    public static boolean ticketExists(int userId,int tripId){
+    public static boolean ticketExists(int userId,int tripId) throws NoConnectionException {
         return getAllUserTickets(userId).contains(tripId);
     }
 
-    public static void deleteTicket(int userId,int tripId){
+    public static void deleteTicket(int userId,int tripId) throws NoConnectionException {
         Connection connection = JDBCUtils.getConnection();
         String req = "DELETE FROM tickets WHERE"+
                 " user_id = "+userId+

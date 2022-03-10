@@ -1,6 +1,7 @@
 package com.tchoutchou.fragments.user;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -14,11 +15,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.tchoutchou.NoConnectionActivity;
 import com.tchoutchou.fragments.Home;
 import com.tchoutchou.R;
 import com.tchoutchou.model.User;
 import com.tchoutchou.util.InexistantUserException;
 import com.tchoutchou.util.MainFragmentReplacement;
+import com.tchoutchou.util.NoConnectionException;
 
 import java.util.Locale;
 
@@ -63,8 +66,9 @@ public class UserConnection extends Fragment {
                             try {
                                 user = User.getInformationsFromDB(loginText, passwordText);
                                 registered = true;
-                            } catch (InexistantUserException e) {
-                                e.printStackTrace();
+                            } catch (InexistantUserException | NoConnectionException e) {
+                                Intent intent = new Intent(requireActivity(), NoConnectionActivity.class);
+                                startActivity(intent);
                             }
                         }
                     };
