@@ -1,10 +1,11 @@
 package com.tchoutchou.model;
 
 
-import android.util.Log;
+import android.app.Activity;
 
 import com.tchoutchou.util.InexistantUserException;
 import com.tchoutchou.util.JDBCUtils;
+import com.tchoutchou.util.NoConnectionException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -98,8 +99,8 @@ public class User {
         return false;
     }
 
-    public static User addUser(String lastname,String firstname,String mail,
-                               String birthdate,String phoneNumber,String password){
+    public static User addUser(String lastname, String firstname, String mail,
+                               String birthdate, String phoneNumber, String password) throws NoConnectionException {
         User user = null;
         Connection connection = JDBCUtils.getConnection();
         String req = "Insert into users (`lastname`, `firstname`, `mail`, `password`, `birthday`, `phoneNumber`) values (" +
@@ -129,7 +130,7 @@ public class User {
     }
 
 
-    public static User getInformationsFromDB(String mail, String password) throws InexistantUserException {
+    public static User getInformationsFromDB(String mail, String password) throws InexistantUserException, NoConnectionException {
         List<User> users = getAllUsers();
         User res = null;
         for(User user : users){
@@ -151,7 +152,7 @@ public class User {
             return res;
     }
 
-    public static List<User> getAllUsers(){
+    public static List<User> getAllUsers() throws NoConnectionException {
         List<User> usersList = new ArrayList<>();
         String req = "select * from users";
         Connection connection = JDBCUtils.getConnection();

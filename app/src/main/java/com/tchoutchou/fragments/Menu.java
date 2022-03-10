@@ -35,7 +35,7 @@ public class Menu extends Fragment {
                              Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_menu, container, false);
-        SharedPreferences preferences = this.getActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
+        SharedPreferences preferences = this.requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
         fragmentManager = requireActivity().getSupportFragmentManager();
 
         ImageButton toHomePage = root.findViewById(R.id.homePageButton);

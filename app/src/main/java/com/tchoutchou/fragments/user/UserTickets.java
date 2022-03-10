@@ -44,11 +44,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.tchoutchou.NoConnectionActivity;
 import com.tchoutchou.R;
 import com.tchoutchou.fragments.Home;
 import com.tchoutchou.model.Tickets;
 import com.tchoutchou.model.Trip;
 import com.tchoutchou.util.MainFragmentReplacement;
+import com.tchoutchou.util.NoConnectionException;
 import com.tchoutchou.util.PdfGenerator;
 import com.tchoutchou.util.TripListAdapter;
 
@@ -111,7 +113,12 @@ public class UserTickets extends Fragment {
             Thread tripsRecuperation = new Thread() {
                 @Override
                 public void run() {
-                    tripList = Trip.getUserTrips(userId);
+                    try {
+                        tripList = Trip.getUserTrips(userId);
+                    } catch (NoConnectionException e) {
+                        Intent intent = new Intent(requireActivity(), NoConnectionActivity.class);
+                        startActivity(intent);
+                    }
                 }
             };
             tripsRecuperation.start();
@@ -166,7 +173,12 @@ public class UserTickets extends Fragment {
                             Thread ticketDeletion = new Thread(){
                                 @Override
                                 public void run() {
-                                    Tickets.deleteTicket(userId,trip.getTripId());
+                                    try {
+                                        Tickets.deleteTicket(userId,trip.getTripId());
+                                    } catch (NoConnectionException e) {
+                                        Intent intent = new Intent(requireActivity(), NoConnectionActivity.class);
+                                        startActivity(intent);
+                                    }
                                 }
                             };
                             ticketDeletion.start();
@@ -241,24 +253,28 @@ public class UserTickets extends Fragment {
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void generateTicketPDF(Trip trip){
+    private void generateTicketPDF(Trip trip) {
         if (!checkPermission()) {
             requireActivity().requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 200);
         }
-        PdfGenerator pdfGenerator = new PdfGenerator(requireActivity(),bitmap,trip);
+        PdfGenerator pdfGenerator = new PdfGenerator(requireContext(),pdf_layout,bitmap,trip);
         Thread pdfGeneration = new Thread(pdfGenerator);
         pdfGeneration.start();
 
-        try {
-            pdfGeneration.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        File dir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                getString(R.string.directory_name));
+
+        Toast.makeText(
+                requireContext(),
+                getString(R.string.pdf_saved_text)+" Download/"+getString(R.string.directory_name),
+                Toast.LENGTH_SHORT).show();
+
 
     }
 
     private Bitmap LoadBitmap(View v){
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1200, 2000);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(1200, 2000);
         v.setLayoutParams(layoutParams);
         Bitmap bitmap = Bitmap.createBitmap(v.getLayoutParams().width,v.getLayoutParams().height,Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);

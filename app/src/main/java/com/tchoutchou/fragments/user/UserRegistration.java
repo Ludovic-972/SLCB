@@ -2,6 +2,7 @@ package com.tchoutchou.fragments.user;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -15,10 +16,12 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.tchoutchou.NoConnectionActivity;
 import com.tchoutchou.R;
 import com.tchoutchou.fragments.Home;
 import com.tchoutchou.model.User;
 import com.tchoutchou.util.MainFragmentReplacement;
+import com.tchoutchou.util.NoConnectionException;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -57,10 +60,15 @@ public class UserRegistration extends Fragment {
 
                         @Override
                         public void run() {
-                            user = User.addUser(
-                                    nom.getText().toString(), prenom.getText().toString(),
-                                    mail.getText().toString().toLowerCase(Locale.ROOT), anniversaire.getText().toString(),
-                                    numero.getText().toString(), mdp.getText().toString());
+                            try {
+                                user = User.addUser(
+                                        nom.getText().toString(), prenom.getText().toString(),
+                                        mail.getText().toString().toLowerCase(Locale.ROOT), anniversaire.getText().toString(),
+                                        numero.getText().toString(), mdp.getText().toString());
+                            } catch (NoConnectionException e) {
+                                Intent intent = new Intent(requireActivity(), NoConnectionActivity.class);
+                                startActivity(intent);
+                            }
 
 
                         }
@@ -103,29 +111,21 @@ public class UserRegistration extends Fragment {
             }
         });
 
-        anniversaire.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        anniversaire.setOnClickListener(view -> {
 
-                Calendar c = Calendar.getInstance();
+            Calendar c = Calendar.getInstance();
 
-                DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-
-                    @Override
-                    public void onDateSet(DatePicker view, int year,
-                                          int monthOfYear, int dayOfMonth) {
-                        String date = "";
-                        date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
-                        date+= (monthOfYear<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
-                        date+= year;
-                        anniversaire.setText(date);
-                    }
-                };
-                DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
-                        android.R.style.Theme_Holo_Light_Dialog_NoActionBar
-                        ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
-                datePickerDialog.show();
-            }
+            DatePickerDialog.OnDateSetListener dateSetListener = (view1, year, monthOfYear, dayOfMonth) -> {
+                String date = "";
+                date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
+                date+= (monthOfYear<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
+                date+= year;
+                anniversaire.setText(date);
+            };
+            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+                    android.R.style.Theme_Holo_Light_Dialog_NoActionBar
+                    ,dateSetListener,c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.show();
         });
         return root;
     }

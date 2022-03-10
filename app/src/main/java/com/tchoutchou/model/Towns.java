@@ -1,6 +1,9 @@
 package com.tchoutchou.model;
 
+import android.app.Activity;
+
 import com.tchoutchou.util.JDBCUtils;
+import com.tchoutchou.util.NoConnectionException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,7 +16,7 @@ public class Towns {
 
     private Towns(){}
 
-    public static List<String> getAllTowns(){
+    public static List<String> getAllTowns() throws NoConnectionException {
         List<String> townList = new ArrayList<>();
         String req = "select * from towns";
         Connection connection = JDBCUtils.getConnection();

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.tchoutchou.model.Tickets;
 import com.tchoutchou.model.Trip;
+import com.tchoutchou.util.NoConnectionException;
 import com.tchoutchou.util.TripListAdapter;
 
 import java.util.ArrayList;
@@ -50,7 +51,12 @@ public class TripActivity extends AppCompatActivity{
         Thread tripsRecuperation = new Thread() {
                 @Override
                 public void run() {
-                    tripList = Trip.getTrips(tripsInfos);
+                    try {
+                        tripList = Trip.getTrips(tripsInfos);
+                    } catch (NoConnectionException e) {
+                        Intent intent = new Intent(TripActivity.this, NoConnectionActivity.class);
+                        startActivity(intent);
+                    }
                 }
             };
         tripsRecuperation.start();
@@ -65,7 +71,12 @@ public class TripActivity extends AppCompatActivity{
                     Thread existenceOfTicket = new Thread(){
                         @Override
                         public void run() {
-                            ticketAlreadyExists = Tickets.ticketExists(user_id,tripList.get(position).getTripId());
+                            try {
+                                ticketAlreadyExists = Tickets.ticketExists(user_id,tripList.get(position).getTripId());
+                            } catch (NoConnectionException e) {
+                                Intent intent = new Intent(TripActivity.this, NoConnectionActivity.class);
+                                startActivity(intent);
+                            }
                         }
                     };
                     existenceOfTicket.start();
@@ -100,7 +111,12 @@ public class TripActivity extends AppCompatActivity{
                                         Thread buy = new Thread() {
                                             @Override
                                             public void run() {
-                                                Tickets.addTickets(user_id,trip.getTripId());
+                                                try {
+                                                    Tickets.addTickets(user_id,trip.getTripId());
+                                                } catch (NoConnectionException e) {
+                                                    Intent intent = new Intent(TripActivity.this, NoConnectionActivity.class);
+                                                    startActivity(intent);
+                                                }
                                             }
                                         };
                                         buy.start();

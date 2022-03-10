@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">SLCB</string>
 
     <string name="hello_blank_fragment">Coucou fragment vide</string>
-    <string name="trip_action_bar_text">Bus disponibles à partir du</string>
+    <string name="trip_action_bar_text">Bus disponibles le</string>
     <string name="at"> à </string>
     <string name="the">le</string>
     <string name="show_location_1">Vous êtes actuellement à</string>
@@ -11,4 +11,9 @@
     <string name="departure_from">Départ de</string>
     <string name="arrival_at">Arrivée à</string>
     <string name="pdf_title">Mon billet SLCB &#128646;</string>
+    <string name="no_connection">Pas de connexion</string>
+    <string name="no_connection_text1">Vous n\'avez pas de connexion</string>
+    <string name="no_connection_text2">Veuillez vérifer votre connexion internet</string>
+    <string name="directory_name">Mes Billets SLCB</string>
+    <string name="pdf_saved_text">\"Votre billet à été enregistré dans\"</string>
 </resources>

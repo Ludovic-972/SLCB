@@ -1,11 +1,14 @@
 package com.tchoutchou.model;
 
+import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
 import com.tchoutchou.util.JDBCUtils;
+import com.tchoutchou.util.NoConnectionException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -68,15 +71,18 @@ public class Trip {
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static List<Trip> getTrips(Bundle infos){
+    public static List<Trip> getTrips(Bundle infos) throws NoConnectionException {
         List<Trip> tripList = new ArrayList<>();
         String req = "SELECT trip_id,DATE(departureTime),DATE_FORMAT(departureTime,\"%H:%i\"),departureTown,DATE_FORMAT(arrivalTime,\"%H:%i\"),arrivalTown," +
                 "price,TIMESTAMPDIFF(MINUTE,departureTime,arrivalTime) " +
                 "FROM trips " +
-                "WHERE departureTime >=\""+JDBCUtils.dateToSQLFormat((String) infos.get("tripDay"))+" "+infos.get("departureHour")+"\""+
+                "WHERE DATE(departureTime) =\""+JDBCUtils.dateToSQLFormat((String) infos.get("tripDay"))+"\""+
+                " AND DATE_FORMAT(departureTime,\"%H:%i\") >= \""+infos.get("departureHour")+"\""+
                 " AND departureTown=\""+infos.get("departureTown")+"\""+
                 " AND arrivalTown=\""+infos.get("arrivalTown")+"\""+
                 " ORDER BY DATE(departureTime) ASC";
+
+        Log.d("ExtDb",req);
         Connection connection = JDBCUtils.getConnection();
 
 
@@ -108,7 +114,7 @@ public class Trip {
     }
 
 
-    public static List<Trip> getUserTrips(int userId){
+    public static List<Trip> getUserTrips(int userId) throws NoConnectionException {
         List<Trip> tripList = new ArrayList<>();
         String req = "SELECT T.trip_id,DATE(departureTime),DATE_FORMAT(departureTime,\"%H:%i\"),departureTown,DATE_FORMAT(arrivalTime,\"%H:%i\"),arrivalTown," +
                 "price,TIMESTAMPDIFF(MINUTE,departureTime,arrivalTime) " +
@@ -145,13 +151,15 @@ public class Trip {
     }
 
 
-    public static void clean(){
+    public static void clean() throws NoConnectionException {
         Connection connection = JDBCUtils.getConnection();
         String req = "DELETE T,U FROM trips T JOIN tickets U ON U.trip_id = T.trip_id WHERE T.arrivalTime < NOW()";
+        String req2 = "DELETE FROM trips WHERE arrivalTime < NOW()";
         Statement st;
         try {
             st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             st.executeUpdate(req);
+            st.execute(req2);
         }catch(SQLException e){
             e.printStackTrace();
         }finally {
