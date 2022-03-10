@@ -23,6 +23,7 @@ import java.time.LocalDate;
 public class UserAccount extends Fragment {
 
     static int age;
+    static TextView cartes;
 
     public UserAccount(){}
 
@@ -54,17 +55,25 @@ public class UserAccount extends Fragment {
 
         TextView adresseMail = root.findViewById(R.id.adresseMail);
         String userMail = preferences.getString("mail", "");
-        adresseMail.setText("Adresse mail : " + userMail);
+        adresseMail.setText("Adresse mail :\n" + userMail);
 
         TextView tel = root.findViewById(R.id.phoneNumber);
         String userPhone = preferences.getString("phoneNumber", "");
-        tel.setText("Numero de téléphone : " + userPhone);
+        tel.setText("Numero de téléphone :\n" + userPhone);
+
+        cartes = root.findViewById(R.id.carte);
 
         Button deconnection = root.findViewById(R.id.deconnection);
         deconnection.setOnClickListener(view -> {
             preferences.edit().clear().apply();
             MainFragmentReplacement.replace(fragmentManager,new Home());
         });
+
+        String typeCarte = preferences.getString("Carte", "");
+
+        if(!typeCarte.equals("")) {
+            cartes.setText(typeCarte);
+        }
 
         return root;
     }
