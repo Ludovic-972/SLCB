@@ -20,13 +20,15 @@ public class TripListAdapter extends BaseAdapter {
 
 
     private final LayoutInflater layoutInflater;
-    List<Trip> tripList;
+    private List<Trip> tripList;
+    private String typeCarte;
 
 
-    public TripListAdapter(Context context,List<Trip> tripList) {
+    public TripListAdapter(Context context,List<Trip> tripList, String typeCarte) {
 
         this.layoutInflater = LayoutInflater.from(context);
         this.tripList = tripList;
+        this.typeCarte = typeCarte;
     }
 
     @Override
@@ -64,7 +66,20 @@ public class TripListAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.arrivalHour)).setText(trip.getArrivalHour());
         ((TextView) view.findViewById(R.id.arrivalTown)).setText(trip.getArrivalTown());
 
-        String price = trip.getPrice() +" €";
+        double tmpPrice;
+        switch(typeCarte){
+            case "Carte Jeune":
+                tmpPrice=trip.getPrice()*0.4;
+                break;
+            case "Carte Sénior":
+                tmpPrice=trip.getPrice()*0.5;
+                break;
+            default:
+                tmpPrice=trip.getPrice();
+                break;
+        }
+
+        String price = tmpPrice +" €";
         ((TextView) view.findViewById(R.id.price)).setText(price);
 
         String tripTime = "~"+ trip.getTripTime() +" min";

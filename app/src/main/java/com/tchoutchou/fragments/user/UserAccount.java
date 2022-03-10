@@ -55,11 +55,11 @@ public class UserAccount extends Fragment {
 
         TextView adresseMail = root.findViewById(R.id.adresseMail);
         String userMail = preferences.getString("mail", "");
-        adresseMail.setText("Adresse mail : " + userMail);
+        adresseMail.setText("Adresse mail :\n" + userMail);
 
         TextView tel = root.findViewById(R.id.phoneNumber);
         String userPhone = preferences.getString("phoneNumber", "");
-        tel.setText("Numero de téléphone : " + userPhone);
+        tel.setText("Numero de téléphone :\n" + userPhone);
 
         cartes = root.findViewById(R.id.carte);
 
@@ -69,13 +69,15 @@ public class UserAccount extends Fragment {
             MainFragmentReplacement.replace(fragmentManager,new Home());
         });
 
+        String typeCarte = preferences.getString("Carte", "");
+
+        if(!typeCarte.equals("")) {
+            cartes.setText(typeCarte);
+        }
+
         return root;
     }
 
     static public int getAge() {return age;}
-
-    static public void setReduction(String string) {
-        cartes.setText(string);
-    }
 
 }

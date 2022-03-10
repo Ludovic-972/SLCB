@@ -56,7 +56,7 @@ public class TripActivity extends AppCompatActivity{
         tripsRecuperation.start();
         try {
             tripsRecuperation.join();
-            TripListAdapter adapter = new TripListAdapter(TripActivity.this,tripList);
+            TripListAdapter adapter = new TripListAdapter(TripActivity.this,tripList, preferences.getString("Carte", ""));
             tripListView.setAdapter(adapter);
 
             tripListView.setOnItemClickListener((adapterView, view, position, l) -> {
