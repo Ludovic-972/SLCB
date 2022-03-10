@@ -3,19 +3,36 @@ package com.tchoutchou.fragments.user;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,9 +49,14 @@ import com.tchoutchou.fragments.Home;
 import com.tchoutchou.model.Tickets;
 import com.tchoutchou.model.Trip;
 import com.tchoutchou.util.MainFragmentReplacement;
+import com.tchoutchou.util.PdfGenerator;
 import com.tchoutchou.util.TripListAdapter;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -53,6 +75,8 @@ public class UserTickets extends Fragment {
     }
 
     private List<Trip> tripList;
+    private View pdf_layout;
+    private Bitmap bitmap;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -94,11 +118,13 @@ public class UserTickets extends Fragment {
 
             try {
                 tripsRecuperation.join();
-                TripListAdapter adapter = new TripListAdapter(requireContext(),tripList);
+                TripListAdapter adapter = new TripListAdapter(requireContext(),tripList,preferences.getString("Carte",""));
                 userTickets.setAdapter(adapter);
 
                 userTickets.setOnItemClickListener((adapterView, view1, position, l) -> {
                     Trip trip = tripList.get(position);
+                    initPdfView(trip);
+
                     String[] tripDate = trip.getTripDay().split("-");
                     String tmp = tripDate[0];
                     tripDate[0] = tripDate[2];
@@ -114,7 +140,7 @@ public class UserTickets extends Fragment {
                             + "le "
                             + String.join("/",tripDate) + " "
                             + getString(R.string.at) + " "
-                            + trip.getDepartureHour();
+                            + trip.getArrivalHour();
 
                     TextView title = new TextView(requireContext());
                     title.setText(titleText);
@@ -131,6 +157,7 @@ public class UserTickets extends Fragment {
                             .setCancelable(false)
                             .setNeutralButton("Ok",(dialog,i) -> dialog.dismiss())
                             .setPositiveButton("Imprimer ce billet", (dialog,i) ->{
+                                bitmap  = LoadBitmap(pdf_layout);
                                 generateTicketPDF(trip);
                                 dialog.dismiss();
                             });
@@ -201,7 +228,7 @@ public class UserTickets extends Fragment {
         int minutes = remainingTime[2];
 
         if (days == 0 && hours ==0 && minutes <= 30) {
-            return "Départ dans moins de 30 minutes";
+            return "Départ dans moins de 30 minutes !!";
         }
 
         message += days + " jours ";
@@ -212,26 +239,74 @@ public class UserTickets extends Fragment {
         return message;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void generateTicketPDF(Trip trip){
-        if (checkPermission()) {
-            File dir = new File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                    "Mes Billets TchouTchou");
+        if (!checkPermission()) {
+            requireActivity().requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 200);
+        }
+        PdfGenerator pdfGenerator = new PdfGenerator(requireActivity(),bitmap,trip);
+        Thread pdfGeneration = new Thread(pdfGenerator);
+        pdfGeneration.start();
 
-            if (!dir.exists()){
-                dir.mkdirs();
-            }
-
-            File file = new File(dir,"");
-            Toast.makeText(requireContext(), "Votre billet à été enregistré dans "+dir.toString(), Toast.LENGTH_SHORT).show();
-        } else {
-            requireActivity().requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+        try {
+            pdfGeneration.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
     }
 
-    private static final int PERMISSION_REQUEST_CODE = 200;
+    private Bitmap LoadBitmap(View v){
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(1200, 2000);
+        v.setLayoutParams(layoutParams);
+        Bitmap bitmap = Bitmap.createBitmap(v.getLayoutParams().width,v.getLayoutParams().height,Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        v.draw(canvas);
+        return bitmap;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void  initPdfView(Trip trip){
+
+        pdf_layout = getLayoutInflater().inflate(R.layout.ticket_pdf_layout, null);
+        String[] tripDay = trip.getTripDay().split("-");
+        String tmp = tripDay[0];
+        tripDay[0] = tripDay[2];
+        tripDay[2] = tmp;
+
+        TextView tripDate = pdf_layout.findViewById(R.id.tripDate);
+        tripDate.setText(String.join("/",tripDay));
+
+        TextView tripInfos = pdf_layout.findViewById(R.id.trip);
+        tripInfos.setText(trip.getDepartureTown()+" -> "+trip.getArrivalTown());
+
+
+
+        SharedPreferences preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
+        TextView traveler = pdf_layout.findViewById(R.id.traveler);
+        String travelerString = "";
+        travelerString += preferences.getString("lastname","");
+        travelerString += " ";
+        travelerString += preferences.getString("firstname","");
+        traveler.setText(travelerString);
+
+        TextView departure = pdf_layout.findViewById(R.id.departure);
+        String departureString = "";
+        departureString += trip.getDepartureTown()+" ";
+        departureString += getString(R.string.at);
+        departureString += trip.getDepartureHour()+" ";
+        departure.setText(departureString);
+
+        TextView arrival = pdf_layout.findViewById(R.id.arrival);
+        String arrivalString = "";
+        arrivalString += trip.getArrivalTown()+" ";
+        arrivalString += getString(R.string.at);
+        arrivalString += trip.getArrivalHour()+" ";
+        arrival.setText(arrivalString);
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean checkPermission() {

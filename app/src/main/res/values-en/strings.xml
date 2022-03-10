@@ -6,4 +6,8 @@
     <string name="the">the</string>
     <string name="show_location_1">You are currently in</string>
     <string name="show_location_2">Do you want to search for a ticket from your location?</string>
+    <string name="traveler_text">Traveler :</string>
+    <string name="departure_from">Departure from</string>
+    <string name="arrival_at">Arrival at</string>
+    <string name="pdf_title">My SLCB ticket &#128646;</string>
 </resources>

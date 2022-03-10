@@ -7,4 +7,8 @@
     <string name="the">le</string>
     <string name="show_location_1">Vous êtes actuellement à</string>
     <string name="show_location_2">Voulez-vous cherchez un billet depuis votre emplacement ?</string>
+    <string name="traveler_text">Voyageur :</string>
+    <string name="departure_from">Départ de</string>
+    <string name="arrival_at">Arrivée à</string>
+    <string name="pdf_title">Mon billet SLCB &#128646;</string>
 </resources>

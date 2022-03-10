@@ -84,7 +84,7 @@ public class Home extends Fragment implements LocationListener {
 
         String text = greetings.getText().toString();
 
-        greetings.setText(text+" "+username+"\uD83D\uDC4B,");
+        greetings.setText(text+" "+username+" \uD83D\uDC4B,");
 
         Thread townsRecuperation = new Thread(){
             @Override

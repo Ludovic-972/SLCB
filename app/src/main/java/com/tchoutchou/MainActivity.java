@@ -21,10 +21,9 @@ import com.tchoutchou.util.MainFragmentReplacement;
 public class MainActivity extends AppCompatActivity {
 
     private static boolean appIsOpen = false;
-    private Handler handler;
     private boolean doubleBackToExitPressedOnce = false;
     private FragmentManager fm;
-    Fragment mainFragment;
+    private Fragment mainFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +33,13 @@ public class MainActivity extends AppCompatActivity {
         View mainView = getLayoutInflater().inflate(R.layout.activity_main, null);
 
         setContentView(loadingScreen);
-        handler = new Handler();
+        Handler handler = new Handler();
         if (!appIsOpen) {
             Runnable change = () -> setContentView(mainView);
 
             Runnable loading = () -> {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(3000);
                     Trip.clean();
                     handler.post(change);
                 } catch (InterruptedException e) {
