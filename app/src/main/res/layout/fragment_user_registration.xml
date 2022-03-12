@@ -13,17 +13,17 @@
         android:layout_marginHorizontal="30dp"
         android:layout_marginTop="20dp"
         android:gravity="center"
-        android:hint="Nom"
+        android:hint="@string/lastname"
         android:inputType="textCapWords"
-        android:textSize="20dp" />
+        android:textSize="20sp" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/prenom"
-        android:hint="Prénom"
+        android:hint="@string/firstname"
         android:gravity="center"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="30dp"
         android:inputType="text"/>
@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/mail"
-        android:hint="Adresse e-mail"
+        android:hint="E-mail"
         android:gravity="center"
         android:textSize="20dp"
         android:layout_marginTop="20dp"
@@ -55,9 +55,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/numero"
-        android:hint="Numero de téléphone"
+        android:hint="@string/phone_number"
         android:gravity="center"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="30dp"
         android:inputType="phone"/>
@@ -66,9 +66,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/mdp"
-        android:hint="Mot de passe"
+        android:hint="@string/password"
         android:gravity="center"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="30dp"
         android:inputType="textPassword"/>
@@ -77,7 +77,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/inscrire"
-        android:text="S'inscrire"
+        android:text="@string/register"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="30dp"/>
 

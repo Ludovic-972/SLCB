@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class PdfGenerator implements Runnable{
+public class PdfGenerator extends Thread{
 
     private final Context context;
     private Bitmap bitmap;
@@ -45,8 +45,6 @@ public class PdfGenerator implements Runnable{
         String tmp = tripDate[0];
         tripDate[0] = tripDate[2];
         tripDate[2] = tmp;
-
-        initPdfView();
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -95,42 +93,4 @@ public class PdfGenerator implements Runnable{
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void  initPdfView(){
-
-        String[] tripDay = trip.getTripDay().split("-");
-        String tmp = tripDay[0];
-        tripDay[0] = tripDay[2];
-        tripDay[2] = tmp;
-
-        TextView tripDate = view.findViewById(R.id.tripDate);
-        tripDate.setText(String.join("/",tripDay));
-
-        TextView tripInfos = view.findViewById(R.id.trip);
-        tripInfos.setText(trip.getDepartureTown()+" -> "+trip.getArrivalTown());
-
-
-
-        SharedPreferences preferences = ((Activity) context).getSharedPreferences("userInfos", Context.MODE_PRIVATE);
-        TextView traveler = view.findViewById(R.id.traveler);
-        String travelerString = "";
-        travelerString += preferences.getString("lastname","");
-        travelerString += " ";
-        travelerString += preferences.getString("firstname","");
-        traveler.setText(travelerString);
-
-        TextView departure = view.findViewById(R.id.departure);
-        String departureString = "";
-        departureString += trip.getDepartureTown()+" ";
-        departureString += ((Activity) context).getString(R.string.at);
-        departureString += trip.getDepartureHour()+" ";
-        departure.setText(departureString);
-
-        TextView arrival = view.findViewById(R.id.arrival);
-        String arrivalString = "";
-        arrivalString += trip.getArrivalTown()+" ";
-        arrivalString += ((Activity) context).getString(R.string.at);
-        arrivalString += trip.getArrivalHour()+" ";
-        arrival.setText(arrivalString);
-    }
 }

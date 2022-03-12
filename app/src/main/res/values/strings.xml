@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">SLCB</string>
 
-    <string name="hello_blank_fragment">Coucou fragment vide</string>
+
     <string name="trip_action_bar_text">Bus disponibles le</string>
     <string name="at"> à </string>
     <string name="the">le</string>
@@ -15,5 +15,72 @@
     <string name="no_connection_text1">Vous n\'avez pas de connexion</string>
     <string name="no_connection_text2">Veuillez vérifer votre connexion internet</string>
     <string name="directory_name">Mes Billets SLCB</string>
-    <string name="pdf_saved_text">\"Votre billet à été enregistré dans\"</string>
+    <string name="pdf_saved_text">Votre billet à été enregistré dans</string>
+    <string name="trip_on">Voyage du</string>
+    <string name="print_ticket">Télécharger le billet</string>
+    <string name="mail">Adresse mail :</string>
+    <string name="phone_number">Numero de téléphone :</string>
+    <string name="years_old">ans</string>
+    <string name="incorrect_login_or_pwd">Login ou mot de passe incorrecte</string>
+    <string name="fill_fields">Veuillez remplir tous les champs</string>
+    <string name="invalid_email">Email invalide</string>
+    <string name="nice_to_see_you_again">Content de vous revoir</string>
+    <string name="email_already_used">Inscription impossible,cet email est déjà utilisée</string>
+    <string name="must_be_connected">Vous n\'êtes pas connecté</string>
+    <string name="must_be_connected_to_buy">Vous devez être connecté pour acheter des tickets</string>
+    <string name="log_in">Se connecter</string>
+    <string name="go_to_homepage">Aller à l\'accueil</string>
+    <string name="see_ticket">Voir le billet</string>
+    <string name="delete_trip">Supprimer le billet</string>
+    <string name="trip_deleted">Voyage supprimé</string>
+    <string name="departure_in_less_than_30">Départ dans moins de 30 minutes !!</string>
+    <string name="remaining_time1">Il reste</string>
+    <string name="remaining_time2">avant le départ</string>
+    <string name="days">jour(s)</string>
+    <string name="hours">heure(s)</string>
+    <string name="minutes">minute(s)</string>
+    <string name="enter_a_lc_city">Veuillez entrer une ville du Loir-et-Cher</string>
+    <string name="wait">Patientez…</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="localisation_request">Veuillez activer la localisation</string>
+    <string name="localisation_recuperation_error">Erreur de récupération de position,veuillez rééssayer</string>
+    <string name="discounts_prohibited">Vous n\'avez pas le droit à des réductions</string>
+    <string name="old_user">Vous êtes un sénior</string>
+    <string name="young_user">Vous êtes une jeune personne</string>
+    <string name="young_card">Carte jeune</string>
+    <string name="old_card">Carte sénior</string>
+    <string name="young_card_added">Ajout carte jeune</string>
+    <string name="old_card_added">Ajout carte sénior</string>
+    <string name="press_again">Appuyez encore une fois sur retour pour sortir</string>
+    <string name="logo" translatable="false">logo</string>
+    <string name="hello">Bonjour</string>
+    <string name="trip_research">Rechercher un trajet..</string>
+    <string name="when">Quand ?</string>
+    <string name="from_where">D\'où ?</string>
+    <string name="departure_town">Ville de départ</string>
+    <string name="to">Vers ?</string>
+    <string name="arrival_town">Ville d\'arrivée</string>
+    <string name="search_a_bus">Chercher un bus</string>
+    <string name="see_offers">Voir les offres et les avantages clients SLCB</string>
+    <string name="my_slcb_tickets">Mes Billets SLCB</string>
+    <string name="discounts">Réductions</string>
+    <string name="young">Jeunes</string>
+    <string name="old">Sénior</string>
+    <string name="save">Sauvegarder</string>
+    <string name="account_title">Mon compte</string>
+    <string name="my_discounts">Mes cartes de réduction</string>
+    <string name="deconnect">Se déconnecter</string>
+    <string name="password">Mot de passe</string>
+    <string name="register">S\'inscrire</string>
+    <string name="lastname">Nom</string>
+    <string name="firstname">Prénom</string>
+    <string name="ticket_qrcode">QrCode du billet</string>
+    <string name="oops">Oups…</string>
+    <string name="from">à partir de</string>
+    <string name="purchase_impossible">Achat Impossible</string>
+    <string name="ticket_already_purchased">Vous avez déjà achetez ce ticket</string>
+    <string name="purchase_succeded">Votre achat à été réalisé.</string>
+    <string name="purchase_question">Voulez achetez ce billet ?</string>
+
 </resources>

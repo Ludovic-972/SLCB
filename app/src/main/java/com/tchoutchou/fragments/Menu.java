@@ -1,6 +1,5 @@
 package com.tchoutchou.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,7 +13,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.tchoutchou.R;
-import com.tchoutchou.fragments.user.*;
+import com.tchoutchou.fragments.user.UserAccount;
+import com.tchoutchou.fragments.user.UserConnection;
+import com.tchoutchou.fragments.user.UserTickets;
 import com.tchoutchou.util.MainFragmentReplacement;
 
 
@@ -29,7 +30,7 @@ public class Menu extends Fragment {
 
 
     FragmentManager fragmentManager;
-    @SuppressLint("ClickableViewAccessibility")
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

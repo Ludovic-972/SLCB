@@ -106,8 +106,8 @@ public class TripActivity extends AppCompatActivity{
 
                             builder.setCustomTitle(title)
                                     .setCancelable(false)
-                                    .setMessage("Voulez achetez ce billet ?")
-                                    .setPositiveButton("Oui", (dialogInterface, i) -> {
+                                    .setMessage(getString(R.string.purchase_question))
+                                    .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
                                         Thread buy = new Thread() {
                                             @Override
                                             public void run() {
@@ -123,7 +123,7 @@ public class TripActivity extends AppCompatActivity{
                                         try {
                                             buy.join();
                                             dialogInterface.dismiss();
-                                            Toast.makeText(TripActivity.this,"Votre achat à été réalisé.",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(TripActivity.this, getString(R.string.purchase_succeded),Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(TripActivity.this, MainActivity.class);
                                             startActivity(intent);
                                             finish();
@@ -131,16 +131,16 @@ public class TripActivity extends AppCompatActivity{
                                             e.printStackTrace();
                                         }
                                     })
-                                    .setNegativeButton("Non", (dialogInterface, i) -> dialogInterface.dismiss());
+                                    .setNegativeButton(getString(R.string.no), (dialogInterface, i) -> dialogInterface.dismiss());
 
                             AlertDialog alert = builder.create();
                             alert.show();
                         }else{
                             AlertDialog.Builder builder = new AlertDialog.Builder(TripActivity.this);
 
-                            builder.setTitle("Achat Impossible")
+                            builder.setTitle(getString(R.string.purchase_impossible))
                                     .setCancelable(false)
-                                    .setMessage("Vous avez déjà achetez ce ticket")
+                                    .setMessage(R.string.ticket_already_purchased)
                                     .setNeutralButton("Ok",(dialog,i2) -> dialog.dismiss());
 
                             AlertDialog alert = builder.create();
@@ -171,7 +171,7 @@ public class TripActivity extends AppCompatActivity{
                 "\n" +
                 String.join("/", tripsInfos.getString("tripDay").split("-")) +
                 " " +
-                getString(R.string.at) +
+                getString(R.string.from)+
                 " " +
                 tripsInfos.getString("departureHour");
         tripDay.setText(sb);

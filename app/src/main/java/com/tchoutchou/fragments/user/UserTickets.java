@@ -1,64 +1,34 @@
 package com.tchoutchou.fragments.user;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.pdf.PdfDocument;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.tchoutchou.NoConnectionActivity;
 import com.tchoutchou.R;
+import com.tchoutchou.TicketPdfActivity;
 import com.tchoutchou.fragments.Home;
 import com.tchoutchou.model.Tickets;
 import com.tchoutchou.model.Trip;
 import com.tchoutchou.util.MainFragmentReplacement;
 import com.tchoutchou.util.NoConnectionException;
-import com.tchoutchou.util.PdfGenerator;
 import com.tchoutchou.util.TripListAdapter;
 
-import org.w3c.dom.Text;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -77,8 +47,6 @@ public class UserTickets extends Fragment {
     }
 
     private List<Trip> tripList;
-    private View pdf_layout;
-    private Bitmap bitmap;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -93,14 +61,14 @@ public class UserTickets extends Fragment {
         int userId = preferences.getInt("userId",0);
         if (userId == 0){
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Vous n'êtes pas connecté")
+            builder.setTitle(getString(R.string.must_be_connected))
                     .setCancelable(false)
-                    .setMessage("Vous devez être connecté pour acheter des tickets.")
-                    .setPositiveButton("Se connecter",(dialog,i) -> {
+                    .setMessage(getString(R.string.must_be_connected_to_buy))
+                    .setPositiveButton(R.string.log_in,(dialog, i) -> {
                         dialog.cancel();
                         MainFragmentReplacement.replace(fragmentManager,new UserConnection());
                     }
-                    ).setNegativeButton("Aller à l'accueil",(dialog,i) -> {
+                    ).setNegativeButton(getString(R.string.go_to_homepage),(dialog, i) -> {
                         dialog.cancel();
                         MainFragmentReplacement.replace(fragmentManager,new Home());
                     }
@@ -130,7 +98,6 @@ public class UserTickets extends Fragment {
 
                 userTickets.setOnItemClickListener((adapterView, view1, position, l) -> {
                     Trip trip = tripList.get(position);
-                    initPdfView(trip);
 
                     String[] tripDate = trip.getTripDay().split("-");
                     String tmp = tripDate[0];
@@ -144,7 +111,7 @@ public class UserTickets extends Fragment {
                     String titleText = trip.getDepartureTown()
                             + " -> "
                             + trip.getArrivalTown() + "\n"
-                            + "le "
+                            + getString(R.string.the)
                             + String.join("/",tripDate) + " "
                             + getString(R.string.at) + " "
                             + trip.getArrivalHour();
@@ -163,13 +130,14 @@ public class UserTickets extends Fragment {
                             .setMessage(setDialogMessage(remainingTime))
                             .setCancelable(false)
                             .setNeutralButton("Ok",(dialog,i) -> dialog.dismiss())
-                            .setPositiveButton("Imprimer ce billet", (dialog,i) ->{
-                                bitmap  = LoadBitmap(pdf_layout);
-                                generateTicketPDF(trip);
+                            .setPositiveButton(getString(R.string.see_ticket), (dialog, i) ->{
+                                Intent intent = new Intent(requireActivity(), TicketPdfActivity.class);
+                                intent.putExtra("Trip",trip);
+                                startActivity(intent);
                                 dialog.dismiss();
                             });
                     if (remainingTime[0] > 0){
-                        builder.setNegativeButton("Supprimer ce voyage",(dialog,i) ->{
+                        builder.setNegativeButton(getString(R.string.delete_trip),(dialog, i) ->{
                             Thread ticketDeletion = new Thread(){
                                 @Override
                                 public void run() {
@@ -185,7 +153,7 @@ public class UserTickets extends Fragment {
 
                             try {
                                 ticketDeletion.join();
-                                Toast.makeText(requireContext(), "Voyage supprimé", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(requireContext(), getString(R.string.trip_deleted), Toast.LENGTH_SHORT).show();
                                 MainFragmentReplacement.replace(
                                         requireActivity().getSupportFragmentManager(),
                                         new UserTickets());
@@ -233,104 +201,22 @@ public class UserTickets extends Fragment {
     }
 
     private String setDialogMessage(int[] remainingTime){
-        String message = "Il reste ";
+        String message = getString(R.string.remaining_time1)+" ";
 
         int days = remainingTime[0];
         int hours = remainingTime[1];
         int minutes = remainingTime[2];
 
         if (days == 0 && hours ==0 && minutes <= 30) {
-            return "Départ dans moins de 30 minutes !!";
+            return getString(R.string.departure_in_less_than_30);
         }
 
-        message += days + " jours ";
-        message += hours + " heures ";
-        message += minutes +" minutes ";
+        message += days + " "+getString(R.string.days)+" ";
+        message += hours + " "+getString(R.string.hours)+" ";
+        message += minutes +" "+getString(R.string.minutes)+" ";
 
-        message += "avant le départ";
+        message += getString(R.string.remaining_time2);
         return message;
     }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void generateTicketPDF(Trip trip) {
-        if (!checkPermission()) {
-            requireActivity().requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 200);
-        }
-        PdfGenerator pdfGenerator = new PdfGenerator(requireContext(),pdf_layout,bitmap,trip);
-        Thread pdfGeneration = new Thread(pdfGenerator);
-        pdfGeneration.start();
-
-        File dir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                getString(R.string.directory_name));
-
-        Toast.makeText(
-                requireContext(),
-                getString(R.string.pdf_saved_text)+" Download/"+getString(R.string.directory_name),
-                Toast.LENGTH_SHORT).show();
-
-
-    }
-
-    private Bitmap LoadBitmap(View v){
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(1200, 2000);
-        v.setLayoutParams(layoutParams);
-        Bitmap bitmap = Bitmap.createBitmap(v.getLayoutParams().width,v.getLayoutParams().height,Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        v.draw(canvas);
-        return bitmap;
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void  initPdfView(Trip trip){
-
-        pdf_layout = getLayoutInflater().inflate(R.layout.ticket_pdf_layout, null);
-        String[] tripDay = trip.getTripDay().split("-");
-        String tmp = tripDay[0];
-        tripDay[0] = tripDay[2];
-        tripDay[2] = tmp;
-
-        TextView tripDate = pdf_layout.findViewById(R.id.tripDate);
-        tripDate.setText(String.join("/",tripDay));
-
-        TextView tripInfos = pdf_layout.findViewById(R.id.trip);
-        tripInfos.setText(trip.getDepartureTown()+" -> "+trip.getArrivalTown());
-
-
-
-        SharedPreferences preferences = requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
-        TextView traveler = pdf_layout.findViewById(R.id.traveler);
-        String travelerString = "";
-        travelerString += preferences.getString("lastname","");
-        travelerString += " ";
-        travelerString += preferences.getString("firstname","");
-        traveler.setText(travelerString);
-
-        TextView departure = pdf_layout.findViewById(R.id.departure);
-        String departureString = "";
-        departureString += trip.getDepartureTown()+" ";
-        departureString += getString(R.string.at);
-        departureString += trip.getDepartureHour()+" ";
-        departure.setText(departureString);
-
-        TextView arrival = pdf_layout.findViewById(R.id.arrival);
-        String arrivalString = "";
-        arrivalString += trip.getArrivalTown()+" ";
-        arrivalString += getString(R.string.at);
-        arrivalString += trip.getArrivalHour()+" ";
-        arrival.setText(arrivalString);
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private boolean checkPermission() {
-        // checking of permissions.
-        int permission1 = requireActivity().checkSelfPermission(WRITE_EXTERNAL_STORAGE);
-        int permission2 = requireActivity().checkSelfPermission(READ_EXTERNAL_STORAGE);
-        return permission1 == PackageManager.PERMISSION_GRANTED && permission2 == PackageManager.PERMISSION_GRANTED;
-    }
-
 
 }

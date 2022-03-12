@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/titreOffers"
-        android:text="Réductions"
-        android:textSize="20dp"
+        android:text="@string/discounts"
+        android:textSize="20sp"
         android:gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="30dp"/>
@@ -27,20 +27,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/boutonJeunes"
-            android:text="Jeunes"/>
+            android:text="@string/young"/>
 
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/boutonVieux"
-            android:text="Sénior"/>
+            android:text="@string/old"/>
     </RadioGroup>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/boutonSave"
-        android:text="Sauvegarder"
+        android:text="@string/save"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="30dp"/>
 

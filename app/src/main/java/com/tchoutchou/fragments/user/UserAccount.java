@@ -22,8 +22,7 @@ import java.time.LocalDate;
 
 public class UserAccount extends Fragment {
 
-    static int age;
-    static TextView cartes;
+    private static int age;
 
     public UserAccount(){}
 
@@ -51,17 +50,17 @@ public class UserAccount extends Fragment {
         LocalDate now = LocalDate.now();
         age = dateOfBirth.until(now).getYears();
 
-        infos.setText(userFirstname + " " + userName + ", " + age + " ans");
+        infos.setText(userFirstname + " " + userName + ", " + age + " " + getString(R.string.years_old));
 
         TextView adresseMail = root.findViewById(R.id.adresseMail);
         String userMail = preferences.getString("mail", "");
-        adresseMail.setText("Adresse mail :\n" + userMail);
+        adresseMail.setText(getString(R.string.mail)+"\n" + userMail);
 
         TextView tel = root.findViewById(R.id.phoneNumber);
         String userPhone = preferences.getString("phoneNumber", "");
-        tel.setText("Numero de téléphone :\n" + userPhone);
+        tel.setText(getString(R.string.phone_number)+"\n" + userPhone);
 
-        cartes = root.findViewById(R.id.carte);
+        TextView cartes = root.findViewById(R.id.carte);
 
         Button deconnection = root.findViewById(R.id.deconnection);
         deconnection.setOnClickListener(view -> {

@@ -17,7 +17,7 @@
         android:theme="@style/Theme.SLCB">
         <activity
             android:name=".OpenLoadingActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -25,18 +25,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
-            android:exported="false"/>
-
+            android:exported="false" />
         <activity
             android:name=".TripActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
-
         <activity
             android:name=".NoConnectionActivity"
+            android:exported="false"
+            android:parentActivityName=".OpenLoadingActivity" />
+
+        <activity
+            android:name=".TicketPdfActivity"
             android:exported="false"
             android:parentActivityName=".OpenLoadingActivity" />
     </application>

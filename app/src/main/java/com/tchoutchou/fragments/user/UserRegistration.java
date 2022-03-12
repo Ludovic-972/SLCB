@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -53,7 +52,7 @@ public class UserRegistration extends Fragment {
         Button register = root.findViewById(R.id.inscrire);
         register.setOnClickListener(view -> {
             if (!verifyInputs()){
-                Toast.makeText(requireContext(), "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.fill_fields), Toast.LENGTH_SHORT).show();
             }else {
                 if (validMail()) {
                     Thread registration = new Thread() {
@@ -100,13 +99,13 @@ public class UserRegistration extends Fragment {
                             mdp.setText("");
                             MainFragmentReplacement.replace(requireActivity().getSupportFragmentManager(), new Home());
                         } else
-                            Toast.makeText(requireContext(), "Inscription impossible,cet email est déjà utilisée.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), getString(R.string.email_already_used), Toast.LENGTH_SHORT).show();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
 
                 }else{
-                    Toast.makeText(requireContext(), "Email invalide", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.invalid_email), Toast.LENGTH_SHORT).show();
                 }
             }
         });

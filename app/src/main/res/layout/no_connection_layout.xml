@@ -7,21 +7,31 @@
     android:background="@color/white"
     tools:context=".NoConnectionActivity">
 
+    <TextView
+        android:id="@+id/oops"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="50sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="@string/oops"/>
+
     <ImageView
         android:id="@+id/noConnectionImage"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@id/oops"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
-        app:srcCompat="@drawable/no_connection" />
+        app:srcCompat="@drawable/no_connection"
+        android:contentDescription="@string/no_connection" />
 
     <TextView
         android:id="@+id/noConnectionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/noConnectionImage"
-        android:layout_marginTop="80dp"
-        android:textSize="22sp"
+        android:layout_marginTop="50dp"
+        android:textSize="20sp"
         android:layout_centerHorizontal="true"
         android:text="@string/no_connection_text1" />
 
@@ -32,7 +42,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/noConnectionText"
         android:layout_marginTop="20dp"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:text="@string/no_connection_text2" />
 
 

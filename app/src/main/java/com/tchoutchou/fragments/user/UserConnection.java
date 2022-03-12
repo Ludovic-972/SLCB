@@ -77,7 +77,7 @@ public class UserConnection extends Fragment {
                     try {
                         verify.join();
                         if (!registered) {
-                            Toast.makeText(requireContext(), "Login ou mot de passe incorrecte", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), requireActivity().getString(R.string.incorrect_login_or_pwd), Toast.LENGTH_SHORT).show();
                             mdp.setText("");
                         }else {
                             editor.putInt("userId", user.getId());
@@ -89,17 +89,17 @@ public class UserConnection extends Fragment {
                             editor.putString("password", user.getPassword());
 
                             editor.apply();
-                            Toast.makeText(requireContext(), "Content de vous revoir " + user.getFirstname() + " !", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), getString(R.string.nice_to_see_you_again)+" "+ user.getFirstname() + " !", Toast.LENGTH_SHORT).show();
                             MainFragmentReplacement.replace(fragmentManager, new Home());
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }else{
-                    Toast.makeText(requireContext(), "Email invalide", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.invalid_email), Toast.LENGTH_SHORT).show();
                 }
             } else
-                Toast.makeText(requireContext(), "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.fill_fields), Toast.LENGTH_SHORT).show();
 
 
         });
