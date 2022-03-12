@@ -2,7 +2,6 @@ package com.tchoutchou.util;
 
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +19,9 @@ public class TripListAdapter extends BaseAdapter {
 
 
     private final LayoutInflater layoutInflater;
-    private List<Trip> tripList;
-    private String typeCarte;
+    private final List<Trip> tripList;
+    private final String typeCarte;
+    private final Context context;
 
 
     public TripListAdapter(Context context,List<Trip> tripList, String typeCarte) {
@@ -29,6 +29,7 @@ public class TripListAdapter extends BaseAdapter {
         this.layoutInflater = LayoutInflater.from(context);
         this.tripList = tripList;
         this.typeCarte = typeCarte;
+        this.context = context;
     }
 
     @Override
@@ -67,19 +68,15 @@ public class TripListAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.arrivalTown)).setText(trip.getArrivalTown());
 
         double tmpPrice;
-        switch(typeCarte){
-            case "Carte Jeune":
-                tmpPrice=trip.getPrice()*0.4;
-                break;
-            case "Carte Sénior":
-                tmpPrice=trip.getPrice()*0.5;
-                break;
-            default:
-                tmpPrice=trip.getPrice();
-                break;
-        }
 
-        String price = tmpPrice +" €";
+        if (typeCarte.equals(context.getString(R.string.young_card)))
+            tmpPrice=trip.getPrice()*0.6;
+        else if (typeCarte.equals(context.getString(R.string.old_card)))
+            tmpPrice=trip.getPrice()*0.5;
+        else
+            tmpPrice=trip.getPrice();
+
+        String price = (Math.round(tmpPrice*100.0)/100.0) +" €";
         ((TextView) view.findViewById(R.id.price)).setText(price);
 
         String tripTime = "~"+ trip.getTripTime() +" min";

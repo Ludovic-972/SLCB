@@ -169,11 +169,11 @@ public class Home extends Fragment implements LocationListener {
 
                         startActivity(intent);
                     }else{
-                        Toast.makeText(requireContext(), "Veuillez entrer des villes existantes",
+                        Toast.makeText(requireContext(), getString(R.string.enter_a_lc_city),
                                 Toast.LENGTH_SHORT).show();
                     }
                 }else{
-                    Toast.makeText(requireContext(), "Veuillez remplir tous les champs",
+                    Toast.makeText(requireContext(), getString(R.string.fill_fields),
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -207,7 +207,7 @@ public class Home extends Fragment implements LocationListener {
 
     private void showLocation(){
         if (gpsOn()) {
-            Toast.makeText(requireContext(), "Patientez...", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), getString(R.string.wait), Toast.LENGTH_LONG).show();
             Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
             List<Address> adresses;
 
@@ -233,8 +233,8 @@ public class Home extends Fragment implements LocationListener {
                             builder.setTitle("Localisation")
                                     .setCancelable(false)
                                     .setMessage(getString(R.string.show_location_1) + " " + cityName + "." + getString(R.string.show_location_2))
-                                    .setNegativeButton("Non", (dialog, i) -> dialog.dismiss())
-                                    .setPositiveButton("Oui", ((dialog, i) -> {
+                                    .setNegativeButton(getString(R.string.no), (dialog, i) -> dialog.dismiss())
+                                    .setPositiveButton(getString(R.string.yes), ((dialog, i) -> {
                                         departureTown.setText(finalCityName);
                                         dialog.dismiss();
                                     }));
@@ -243,7 +243,7 @@ public class Home extends Fragment implements LocationListener {
                                 alert.show();
                             });
                         }else{
-                            handler.post(() -> Toast.makeText(requireContext(), "Erreur de récupération de position\nVeuillez rééssayer", Toast.LENGTH_SHORT).show());
+                            handler.post(() -> Toast.makeText(requireContext(), getString(R.string.localisation_recuperation_error), Toast.LENGTH_SHORT).show());
                         }
                     }
                 }.start();
@@ -266,7 +266,7 @@ public class Home extends Fragment implements LocationListener {
         } catch(AssertionError ignored) {}
 
         if(!gps_enabled){
-            Toast.makeText(requireContext(),"Veuillez activer la localisation",Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), getString(R.string.localisation_request),Toast.LENGTH_LONG).show();
         }
 
 

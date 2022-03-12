@@ -14,13 +14,14 @@ tools:context=".fragments.Home">
     android:layout_alignParentTop="true"
     android:layout_centerHorizontal="true"
     android:layout_marginBottom="30dp"
-    android:layout_marginHorizontal="30dp"/>
+    android:layout_marginHorizontal="30dp"
+    android:contentDescription="@string/logo" />
 
 <TextView
     android:id="@+id/greetings"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Bonjour"
+    android:text="@string/hello"
     android:layout_below="@id/logo"
     android:textSize="20sp"
     android:layout_marginStart="20dp"
@@ -30,7 +31,7 @@ tools:context=".fragments.Home">
     android:id="@+id/researchText"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Rechercher un trajet.."
+    android:text="@string/trip_research"
     android:layout_below="@id/greetings"
     android:textSize="20sp"
     android:layout_marginStart="20dp"
@@ -44,7 +45,7 @@ tools:context=".fragments.Home">
         android:layout_below="@id/researchText"
         android:layout_alignBaseline="@id/tripDate"
         android:layout_marginStart="20dp"
-        android:text="Quand ?"
+        android:text="@string/when"
         android:textSize="18sp" />
 
     <EditText
@@ -59,7 +60,8 @@ tools:context=".fragments.Home">
         android:focusableInTouchMode="false"
         android:hint="Date"
         android:inputType="date"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/departureHour"
@@ -74,7 +76,8 @@ tools:context=".fragments.Home">
         android:focusableInTouchMode="false"
         android:hint="00:00"
         android:inputType="time"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:autofillHints="" />
 
     <TextView
         android:id="@+id/from"
@@ -83,7 +86,7 @@ tools:context=".fragments.Home">
         android:layout_below="@id/tripDate"
         android:layout_alignBaseline="@id/departureTown"
         android:layout_marginStart="20dp"
-        android:text="D'où ?"
+        android:text="@string/from_where"
         android:textSize="18sp" />
 
     <AutoCompleteTextView
@@ -93,7 +96,7 @@ tools:context=".fragments.Home">
         android:layout_below="@id/tripDate"
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@id/from"
-        android:hint="Ville de départ"
+        android:hint="@string/departure_town"
         android:inputType="textCapWords"
         android:minHeight="48dp" />
 
@@ -110,7 +113,7 @@ tools:context=".fragments.Home">
         android:padding="10dp"
         android:scaleType="fitCenter"
         android:src="@drawable/map_icon"
-        tools:ignore="SpeakableTextPresentCheck" />
+        tools:ignore="SpeakableTextPresentCheck"/>
 
     <TextView
         android:id="@+id/to"
@@ -119,7 +122,7 @@ tools:context=".fragments.Home">
         android:layout_below="@id/departureTown"
         android:layout_alignBaseline="@id/arrivalTown"
         android:layout_marginStart="20dp"
-        android:text="Vers ?"
+        android:text="@string/to"
         android:textSize="18sp" />
 
     <AutoCompleteTextView
@@ -131,7 +134,7 @@ tools:context=".fragments.Home">
         android:layout_marginEnd="20dp"
         android:layout_marginTop="2dp"
         android:layout_toEndOf="@+id/to"
-        android:hint="Ville d'arrivée"
+        android:hint="@string/arrival_town"
         android:inputType="textCapWords"
         android:minHeight="48dp" />
 
@@ -140,7 +143,7 @@ tools:context=".fragments.Home">
     android:id="@+id/toRides"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Chercher un bus"
+    android:text="@string/search_a_bus"
     android:layout_centerHorizontal="true"
     android:layout_marginTop="15dp"
     android:layout_below="@id/arrivalTown"
@@ -150,10 +153,11 @@ tools:context=".fragments.Home">
     android:id="@+id/offers"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Voir les offres et les avantages\nclients SLCB"
+    android:text="@string/see_offers"
     android:layout_centerHorizontal="true"
     android:layout_marginBottom="20dp"
     android:layout_alignParentBottom="true"
+    android:layout_marginHorizontal="30dp"
     android:visibility="invisible"
     />
 

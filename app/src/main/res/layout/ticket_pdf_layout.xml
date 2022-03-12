@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center_horizontal">
 
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:layout_marginTop="50dp"
+        android:textSize="25sp"
+        android:layout_marginTop="10dp"
         android:text="@string/pdf_title" />
 
     <TextView
@@ -20,23 +19,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:textSize="25sp"
-        android:text="Voyage du"/>
+        android:textSize="20sp"
+        android:layout_below="@id/title"
+        android:text="@string/trip_on"/>
 
     <TextView
         android:id="@+id/tripDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
-        android:layout_marginStart="5dp"
-        android:text="TextView" />
+        android:textSize="20sp"
+        android:layout_below="@id/tripDateText"/>
 
     <ImageView
         android:id="@+id/qrCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        app:srcCompat="@drawable/qrcode" />
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/tripDate"
+        app:srcCompat="@drawable/qrcode"
+        android:contentDescription="@string/ticket_qrcode" />
 
 
     <TextView
@@ -45,6 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:textSize="25sp"
+        android:layout_below="@id/qrCode"
         android:text="X -> Y"/>
 
 
@@ -52,50 +54,59 @@
         android:id="@+id/travelerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:layout_marginTop="20dp"
+        android:layout_below="@id/trip"
         android:text="@string/traveler_text" />
 
     <TextView
         android:id="@+id/traveler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
-        android:layout_marginStart="5dp"
-        android:text="TextView" />
+        android:textSize="20sp"
+        android:layout_below="@id/travelerText"/>
 
     <TextView
         android:id="@+id/departureText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:layout_marginTop="10dp"
+        android:layout_below="@id/traveler"
         android:text="@string/departure_from" />
 
     <TextView
         android:id="@+id/departure"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
-        android:layout_marginStart="5dp"
-        android:text="TextView" />
+        android:textSize="20sp"
+        android:layout_below="@id/departureText"/>
 
     <TextView
         android:id="@+id/arrivalText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:layout_marginTop="10dp"
+        android:layout_below="@id/departure"
         android:text="@string/arrival_at" />
 
     <TextView
         android:id="@+id/arrival"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
-        android:layout_marginStart="5dp"
-        android:text="TextView" />
+        android:textSize="20sp"
+        android:layout_below="@id/arrivalText"/>
+
+    <Button
+        android:id="@+id/printButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/arrival"
+        android:layout_marginTop="20dp"
+        android:text="@string/print_ticket"
+        />
 
 
 
-</LinearLayout>
+</RelativeLayout>

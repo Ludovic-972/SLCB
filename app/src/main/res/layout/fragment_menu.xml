@@ -25,7 +25,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="Mes Billets\nSLCB"
+        android:text="@string/my_slcb_tickets"
         android:layout_marginHorizontal="5dp"
         android:layout_marginVertical="5dp"
         android:background="@drawable/ripple"/>
