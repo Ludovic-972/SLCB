@@ -72,6 +72,8 @@ public class UserAccount extends Fragment {
 
         if(!typeCarte.equals("")) {
             cartes.setText(typeCarte);
+        }else{
+            cartes.setText(R.string.none);
         }
 
         return root;

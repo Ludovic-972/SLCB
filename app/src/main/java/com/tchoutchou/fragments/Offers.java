@@ -1,6 +1,7 @@
 package com.tchoutchou.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,9 +13,12 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.tchoutchou.NoConnectionActivity;
 import com.tchoutchou.R;
 import com.tchoutchou.fragments.user.UserAccount;
+import com.tchoutchou.model.User;
 import com.tchoutchou.util.MainFragmentReplacement;
+import com.tchoutchou.util.NoConnectionException;
 
 public class Offers extends Fragment {
 
@@ -22,6 +26,7 @@ public class Offers extends Fragment {
 
     private RadioButton boutonJeunes;
     private RadioButton boutonVieux;
+    private String cardType;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,7 @@ public class Offers extends Fragment {
         Button boutonSave = root.findViewById(R.id.boutonSave);
         boutonJeunes = root.findViewById(R.id.boutonJeunes);
         boutonVieux = root.findViewById(R.id.boutonVieux);
+        cardType = "";
 
         boutonSave.setOnClickListener(v -> doSave());
 
@@ -52,6 +58,7 @@ public class Offers extends Fragment {
         if(age<26){
             if(boutonJeunes.isChecked()) {
                 Toast.makeText(requireContext(), getString(R.string.young_card_added), Toast.LENGTH_SHORT).show();
+                cardType = "Young";
                 editor.putString("Carte", getString(R.string.young_card));
             } else {
                 Toast.makeText(requireContext(), getString(R.string.young_user), Toast.LENGTH_SHORT).show();
@@ -59,6 +66,7 @@ public class Offers extends Fragment {
         } else if(age>64) {
             if(boutonVieux.isChecked()) {
                 Toast.makeText(requireContext(), getString(R.string.old_card_added), Toast.LENGTH_SHORT).show();
+                cardType = "Senior";
                 editor.putString("Carte", getString(R.string.old_card));
             } else {
                 Toast.makeText(requireContext(), getString(R.string.old_user), Toast.LENGTH_SHORT).show();
@@ -67,6 +75,25 @@ public class Offers extends Fragment {
             Toast.makeText(requireContext(), getString(R.string.discounts_prohibited), Toast.LENGTH_SHORT).show();
         }
         editor.apply();
-        MainFragmentReplacement.replace(requireActivity().getSupportFragmentManager(), new UserAccount());
+
+        if (!cardType.equals("")) {
+            Thread cardAddition = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        User.addCardType(preferences.getInt("userId", 0), cardType);
+                    } catch (NoConnectionException e) {
+                        Intent intent = new Intent(requireActivity(), NoConnectionActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            };
+            try {
+                cardAddition.join();
+                MainFragmentReplacement.replace(requireActivity().getSupportFragmentManager(), new UserAccount());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

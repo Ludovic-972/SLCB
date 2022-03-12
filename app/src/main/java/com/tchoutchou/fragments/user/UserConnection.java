@@ -66,10 +66,10 @@ public class UserConnection extends Fragment {
                             try {
                                 user = User.getInformationsFromDB(loginText, passwordText);
                                 registered = true;
-                            } catch (InexistantUserException | NoConnectionException e) {
+                            } catch (NoConnectionException e) {
                                 Intent intent = new Intent(requireActivity(), NoConnectionActivity.class);
                                 startActivity(intent);
-                            }
+                            }catch (InexistantUserException ignored){}
                         }
                     };
                     verify.start();
@@ -80,6 +80,8 @@ public class UserConnection extends Fragment {
                             Toast.makeText(requireContext(), requireActivity().getString(R.string.incorrect_login_or_pwd), Toast.LENGTH_SHORT).show();
                             mdp.setText("");
                         }else {
+
+                            String cardType = setUserCardType(user.getCardType());
                             editor.putInt("userId", user.getId());
                             editor.putString("lastname", user.getLastname());
                             editor.putString("firstname", user.getFirstname());
@@ -87,7 +89,7 @@ public class UserConnection extends Fragment {
                             editor.putString("birthdate", user.getBirthdate());
                             editor.putString("phoneNumber", user.getPhoneNumber());
                             editor.putString("password", user.getPassword());
-
+                            editor.putString("Carte", cardType);
                             editor.apply();
                             Toast.makeText(requireContext(), getString(R.string.nice_to_see_you_again)+" "+ user.getFirstname() + " !", Toast.LENGTH_SHORT).show();
                             MainFragmentReplacement.replace(fragmentManager, new Home());
@@ -107,6 +109,14 @@ public class UserConnection extends Fragment {
         Button register = root.findViewById(R.id.register);
         register.setOnClickListener(view -> MainFragmentReplacement.replace(fragmentManager, new UserRegistration()));
         return root;
+    }
+
+    private String setUserCardType(String cardType) {
+        switch (cardType){
+            case "Young": return getString(R.string.young_card);
+            case "Senior": return getString(R.string.old_card);
+            default: return "";
+        }
     }
 
     private boolean validMail(){

@@ -117,7 +117,7 @@ public class UserRegistration extends Fragment {
             DatePickerDialog.OnDateSetListener dateSetListener = (view1, year, monthOfYear, dayOfMonth) -> {
                 String date = "";
                 date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
-                date+= (monthOfYear<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
+                date+= ((monthOfYear+1)<10) ? "0"+(monthOfYear+1)+"-" : (monthOfYear+1)+"-";
                 date+= year;
                 anniversaire.setText(date);
             };

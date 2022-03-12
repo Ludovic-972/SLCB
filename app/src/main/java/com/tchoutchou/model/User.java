@@ -23,12 +23,16 @@ public class User {
     private String birthdate;
     private String phoneNumber;
     private String password;
+    private String cardType;
 
     public User(){
 
     }
 
-    public User(int _id,String _lastname,String _firstname,String _mail,String _password,String _birthdate,String _phoneNumber){
+    public User(int _id,String _lastname,
+                String _firstname,String _mail,
+                String _password,String _birthdate,
+                String _phoneNumber,String _cardType){
         this.id = _id;
         this.lastname = _lastname;
         this.firstname = _firstname;
@@ -36,7 +40,9 @@ public class User {
         this.birthdate = _birthdate;
         this.phoneNumber = _phoneNumber;
         this.password = _password;
+        this.cardType = _cardType;
     }
+
 
     public int getId() {return id;}
 
@@ -90,6 +96,14 @@ public class User {
         this.password = password;
     }
 
+    public String getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(String cardType) {
+        this.cardType = cardType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof User){
@@ -129,6 +143,21 @@ public class User {
         return user;
     }
 
+    public static void addCardType(int userId,String type) throws NoConnectionException {
+        Connection connection = JDBCUtils.getConnection();
+        String req = "UPDATE users SET cardType="+type+
+                " WHERE user_id="+userId;
+        Statement st;
+        try {
+            st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            st.executeUpdate(req);
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            JDBCUtils.close(connection);
+        }
+    }
+
 
     public static User getInformationsFromDB(String mail, String password) throws InexistantUserException, NoConnectionException {
         List<User> users = getAllUsers();
@@ -143,6 +172,7 @@ public class User {
                 res.setMail(user.getMail());
                 res.setPassword(user.getPassword());
                 res.setPhoneNumber(user.getPhoneNumber());
+                res.setCardType(user.getCardType());
                 break;
             }
         }
@@ -171,7 +201,8 @@ public class User {
                         rs.getString(4),
                         rs.getString(5),
                         rs.getString(6),
-                        rs.getString(7))
+                        rs.getString(7),
+                        rs.getString(8))
                 );
             }
 
@@ -183,16 +214,5 @@ public class User {
         return usersList;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", lastname='" + lastname + '\'' +
-                ", firstname='" + firstname + '\'' +
-                ", mail='" + mail + '\'' +
-                ", birthdate='" + birthdate + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
+
 }

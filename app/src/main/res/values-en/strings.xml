@@ -17,7 +17,7 @@
     <string name="trip_on">Trip on</string>
     <string name="print_ticket">Download the ticket</string>
     <string name="mail">Email :</string>
-    <string name="phone_number">Phone number :</string>
+    <string name="phone_number">Phone number</string>
     <string name="years_old">years old</string>
     <string name="incorrect_login_or_pwd">Incorrect login or password</string>
     <string name="fill_fields">Please fill all the fields</string>
@@ -79,4 +79,6 @@
     <string name="ticket_already_purchased">You already purchased this ticket</string>
     <string name="purchase_succeded">Purchase succeded</string>
     <string name="purchase_question">Do you want to purchase this ticket ?</string>
+    <string name="birthdate">Date of birth</string>
+    <string name="none">None</string>
 </resources>

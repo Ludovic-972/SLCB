@@ -19,7 +19,7 @@
     <string name="trip_on">Voyage du</string>
     <string name="print_ticket">Télécharger le billet</string>
     <string name="mail">Adresse mail :</string>
-    <string name="phone_number">Numero de téléphone :</string>
+    <string name="phone_number">Numero de téléphone</string>
     <string name="years_old">ans</string>
     <string name="incorrect_login_or_pwd">Login ou mot de passe incorrecte</string>
     <string name="fill_fields">Veuillez remplir tous les champs</string>
@@ -82,5 +82,7 @@
     <string name="ticket_already_purchased">Vous avez déjà achetez ce ticket</string>
     <string name="purchase_succeded">Votre achat à été réalisé.</string>
     <string name="purchase_question">Voulez achetez ce billet ?</string>
+    <string name="birthdate">Date de naissance</string>
+    <string name="none">Aucune</string>
 
 </resources>
