@@ -58,7 +58,7 @@ public class UserAccount extends Fragment {
 
         TextView tel = root.findViewById(R.id.phoneNumber);
         String userPhone = preferences.getString("phoneNumber", "");
-        tel.setText(getString(R.string.phone_number)+"\n" + userPhone);
+        tel.setText(getString(R.string.phone_number)+" :\n" + userPhone+"\n\n");
 
         TextView cartes = root.findViewById(R.id.carte);
 
