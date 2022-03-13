@@ -81,4 +81,5 @@
     <string name="purchase_question">Do you want to purchase this ticket ?</string>
     <string name="birthdate">Date of birth</string>
     <string name="none">None</string>
+    <string name="bus_already_gone">The bus is on its way to its destination</string>
 </resources>

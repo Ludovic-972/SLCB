@@ -8,6 +8,8 @@ import java.sql.SQLException;
 
 public class JDBCUtils {
 
+    /*Créer une connexion à la base de données externe
+    * Lève une exception si la connection est null*/
     public static Connection getConnection() throws NoConnectionException {
         Connection  connection = null;
         try {
@@ -27,6 +29,7 @@ public class JDBCUtils {
         return connection;
     }
 
+    /*Ferme la connexion entrée en paramètre*/
     public static void close(Connection connection){
         try {
             assert connection != null;
@@ -36,12 +39,15 @@ public class JDBCUtils {
         }
     }
 
+    /*Récupère une date au format ddMMyyyy et renvoie la même date au format ddMMyyyy*/
     public static String dateToSQLFormat(String date) {
         String[] tab = date.split("-");
         return tab[2]+'-'+tab[1]+'-'+tab[0];
     }
 
-    public static boolean hasConnection(Activity activity){
+    public static boolean hasConnection(){
+        /*Si la connexion Internet de l'utilisateur lui permet de se connecter à la  base de données externe
+        * renvoie true sinon renvoie false*/
         try {
             Connection connection = getConnection();
             if(connection == null)

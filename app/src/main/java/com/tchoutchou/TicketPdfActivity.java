@@ -24,6 +24,10 @@ import com.tchoutchou.util.PdfGenerator;
 
 import java.util.Objects;
 
+/**
+ *Page affichant le billet de l'utilisateur
+ */
+
 public class TicketPdfActivity extends AppCompatActivity {
 
     private View pdf_layout;
@@ -46,6 +50,7 @@ public class TicketPdfActivity extends AppCompatActivity {
         Button print = findViewById(R.id.printButton);
 
         print.setOnClickListener(view -> {
+            // Demande la permission en écriture et en lecture si l'application ne l'a pas
             if (!checkPermission()) {
                 requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, 200);
             }

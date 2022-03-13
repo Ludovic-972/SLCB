@@ -31,6 +31,11 @@ public class PdfGenerator extends Thread{
 
 
 
+    /*Classe héritant de la classe Thread
+    * Elle permet de générer un pdf avec les informations du voyageur
+    * et de son trajet
+    *
+    * note:Le pdf généré est vide donc cette classe n'est pas utilisée*/
     public PdfGenerator(Context context,View view, Bitmap bitmap, Trip trip){
         this.context = context;
         this.bitmap = bitmap;
