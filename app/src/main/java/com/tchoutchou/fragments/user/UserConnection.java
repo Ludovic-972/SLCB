@@ -25,7 +25,7 @@ import com.tchoutchou.util.NoConnectionException;
 
 import java.util.Locale;
 
-
+//Cette classe a pour but de faire en sorte qu'un utilisateur puisse se connecter à son compte
 public class UserConnection extends Fragment {
 
 
@@ -57,9 +57,11 @@ public class UserConnection extends Fragment {
             String loginText = mail.getText().toString();
             String passwordText = mdp.getText().toString();
 
+            //On vérifie si les champs sont vides ou non
             if (!loginText.equals("") && !passwordText.equals("")) {
                 if(validMail()) {
                     registered = false;
+                    //Vérification de la présence du compte dans la base de données
                     Thread verify = new Thread() {
                         @Override
                         public void run() {
@@ -111,6 +113,7 @@ public class UserConnection extends Fragment {
         return root;
     }
 
+    //Permet de définir la carte pour la page de compte en récupérant ce qui a été inséré dans la page des cartes de réduction
     private String setUserCardType(String cardType) {
         switch (cardType){
             case "Young": return getString(R.string.young_card);
@@ -119,6 +122,7 @@ public class UserConnection extends Fragment {
         }
     }
 
+    //Obligation de faire respecter un format de mail pour vérifier sa validité
     private boolean validMail(){
         return mail.getText().toString().toLowerCase(Locale.ROOT).matches("^[a-z0-9.-]+@[a-z.-]+\\.[a-z]{2,}");
     }

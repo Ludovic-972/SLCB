@@ -20,6 +20,7 @@ import com.tchoutchou.model.User;
 import com.tchoutchou.util.MainFragmentReplacement;
 import com.tchoutchou.util.NoConnectionException;
 
+//Cette classe permet à l'utilisateur de choisir une carte de réduction fonction de son âge
 public class Offers extends Fragment {
 
     private SharedPreferences preferences;
@@ -49,13 +50,16 @@ public class Offers extends Fragment {
         return root;
     }
 
+    //Méthode qui vérifie quel RadioButton a été coché et si l'âge nécessaire pour choisir une carte est respecté
     public void doSave() {
 
         int age = UserAccount.getAge();
 
         SharedPreferences.Editor editor = preferences.edit();
 
+        //Vérification de l'âge
         if(age<26){
+            //Vérification du RadioButton coché
             if(boutonJeunes.isChecked()) {
                 Toast.makeText(requireContext(), getString(R.string.young_card_added), Toast.LENGTH_SHORT).show();
                 cardType = "Young";
@@ -76,6 +80,7 @@ public class Offers extends Fragment {
         }
         editor.apply();
 
+        //Si la personne n'a rien coché
         if (!cardType.equals("")) {
             Thread cardAddition = new Thread() {
                 @Override

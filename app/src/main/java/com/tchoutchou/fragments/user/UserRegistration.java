@@ -25,7 +25,7 @@ import com.tchoutchou.util.NoConnectionException;
 import java.util.Calendar;
 import java.util.Locale;
 
-
+//Cette classe a pour but de faire en sorte qu'un utilisateur puisse créer un compte
 public class UserRegistration extends Fragment {
 
     private User user;
@@ -55,6 +55,7 @@ public class UserRegistration extends Fragment {
                 Toast.makeText(requireContext(), getString(R.string.fill_fields), Toast.LENGTH_SHORT).show();
             }else {
                 if (validMail()) {
+                    //Ajout du compte dans la base de données
                     Thread registration = new Thread() {
 
                         @Override
@@ -75,6 +76,7 @@ public class UserRegistration extends Fragment {
 
                     registration.start();
 
+                    //Ce qui se passe une fois que le compte est créé (Affichage d'un message puis remise à 0 des zones de texte)
                     try {
                         registration.join();
                         if (user != null) {
@@ -114,6 +116,7 @@ public class UserRegistration extends Fragment {
 
             Calendar c = Calendar.getInstance();
 
+            //Définition d'un format de date
             DatePickerDialog.OnDateSetListener dateSetListener = (view1, year, monthOfYear, dayOfMonth) -> {
                 String date = "";
                 date+= (dayOfMonth<10) ? "0"+dayOfMonth+"-" : dayOfMonth+"-";
