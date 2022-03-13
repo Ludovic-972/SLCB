@@ -9,6 +9,7 @@ import java.util.Objects;
 
 public class NoConnectionActivity extends AppCompatActivity {
 
+    /*Page hors connexion*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

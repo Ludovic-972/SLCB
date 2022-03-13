@@ -66,6 +66,8 @@ public class TripActivity extends AppCompatActivity{
             tripListView.setAdapter(adapter);
 
             tripListView.setOnItemClickListener((adapterView, view, position, l) -> {
+                /*L'utilisateur ne peut acheter un billet que si il a un compte
+                * si il n'en a pas cliquer dessus ne produira rien*/
                 if(user_id != 0) {
 
                     Thread existenceOfTicket = new Thread(){
@@ -83,6 +85,9 @@ public class TripActivity extends AppCompatActivity{
 
                     try{
                         existenceOfTicket.join();
+
+                        /*Si l'utilisateur a déjà acheté ce ticket un AlertDialog le lui fais
+                        * savoir, sinon il peut l'acheter ou pas selon son besoin*/
                         if(!ticketAlreadyExists) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(TripActivity.this);
 

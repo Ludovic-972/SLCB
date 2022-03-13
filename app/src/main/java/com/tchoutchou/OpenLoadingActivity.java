@@ -10,6 +10,8 @@ import com.tchoutchou.model.Trip;
 import com.tchoutchou.util.JDBCUtils;
 import com.tchoutchou.util.NoConnectionException;
 
+
+/*C'est l'activité principale qui renvoie soit vers la page d'acceuil soit vers la page hors connexion*/
 public class OpenLoadingActivity extends AppCompatActivity {
 
 
@@ -31,9 +33,11 @@ public class OpenLoadingActivity extends AppCompatActivity {
 
         Runnable loading = () -> {
             try {
-                if (JDBCUtils.hasConnection(this)) {
+
+                /*Vérifie que l'utilisateur dispose d'une connexion Internet*/
+                if (JDBCUtils.hasConnection()) {
                     Thread.sleep(2000);
-                    Trip.clean();
+                    Trip.clean(); // Supprime les trajets sont la date d'arrivée à la destination est déjà passée
                     handler.post(change);
                 } else {
                     Thread.sleep(2000);
@@ -52,8 +56,4 @@ public class OpenLoadingActivity extends AppCompatActivity {
         new Thread(loading).start();
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
 }

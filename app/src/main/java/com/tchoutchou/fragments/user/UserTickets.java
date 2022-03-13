@@ -59,6 +59,8 @@ public class UserTickets extends Fragment {
 
 
         int userId = preferences.getInt("userId",0);
+        /*Si l'utilisateur n'est pas connecté il aura le choix d'aller vers la page d'accueil ou vers
+        * la page de connexion*/
         if (userId == 0){
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle(getString(R.string.must_be_connected))
@@ -77,6 +79,7 @@ public class UserTickets extends Fragment {
             AlertDialog alert  = builder.create();
             alert.show();
         }else{
+            //Récupération des trajets de l'utilisateur
             ListView userTickets = view.findViewById(R.id.userTickets);
             Thread tripsRecuperation = new Thread() {
                 @Override
@@ -136,6 +139,9 @@ public class UserTickets extends Fragment {
                                 startActivity(intent);
                                 dialog.dismiss();
                             });
+
+                    /*Si le temps avant le trajet est supérieur à 24 heures alors l'utilisateur
+                    * aura la possibilité de supprimer son billet*/
                     if (remainingTime[0] > 0){
                         builder.setNegativeButton(getString(R.string.delete_trip),(dialog, i) ->{
                             Thread ticketDeletion = new Thread(){
@@ -177,6 +183,11 @@ public class UserTickets extends Fragment {
         return view;
     }
 
+    /*Retourne un tableau avec en position:
+    * -0 : le nombre de jour avant de départ
+    * -1 : le nombre d'heures avant de départ
+    * -2 : le nombre de minutes avant de départ
+    */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private int[] remainingTimeUntilTripDay(String tripDateTime){
         LocalDateTime now = LocalDateTime.now();
@@ -200,6 +211,7 @@ public class UserTickets extends Fragment {
         return remainingTime;
     }
 
+    /*Renvoie le message qui dira à l'utilisateur combien de temps il reste avec son départ*/
     private String setDialogMessage(int[] remainingTime){
         String message = getString(R.string.remaining_time1)+" ";
 
@@ -207,8 +219,11 @@ public class UserTickets extends Fragment {
         int hours = remainingTime[1];
         int minutes = remainingTime[2];
 
-        if (days == 0 && hours ==0 && minutes <= 30) {
-            return getString(R.string.departure_in_less_than_30);
+        if (days == 0 && hours ==0) {
+            if(minutes <= 30)
+                return getString(R.string.departure_in_less_than_30);
+            else if (minutes == 0)
+                return getString(R.string.bus_already_gone);
         }
 
         message += days + " "+getString(R.string.days)+" ";

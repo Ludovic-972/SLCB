@@ -12,6 +12,8 @@ import com.tchoutchou.R;
 public class MainFragmentReplacement {
     private MainFragmentReplacement(){}
 
+
+    /*Permet de remplacer le fragment principal de l'activité*/
     public static void replace(FragmentManager fragmentManager, Fragment frag){
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.main);
         if(!frag.getClass().toString().equals(currentFragment.getTag())) {

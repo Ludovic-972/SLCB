@@ -84,5 +84,6 @@
     <string name="purchase_question">Voulez achetez ce billet ?</string>
     <string name="birthdate">Date de naissance</string>
     <string name="none">Aucune</string>
+    <string name="bus_already_gone">Le bus est en chemin vers sa destination</string>
 
 </resources>

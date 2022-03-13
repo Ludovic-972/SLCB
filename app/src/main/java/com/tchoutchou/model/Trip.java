@@ -81,7 +81,7 @@ public class Trip implements Serializable {
                 " AND DATE_FORMAT(departureTime,\"%H:%i\") >= \""+infos.get("departureHour")+"\""+
                 " AND departureTown=\""+infos.get("departureTown")+"\""+
                 " AND arrivalTown=\""+infos.get("arrivalTown")+"\""+
-                " ORDER BY DATE(departureTime) ASC";
+                " ORDER BY DATE_FORMAT(departureTime,\"%H:%i\") ASC";
 
         Log.d("ExtDb",req);
         Connection connection = JDBCUtils.getConnection();
@@ -121,7 +121,7 @@ public class Trip implements Serializable {
                 "price,TIMESTAMPDIFF(MINUTE,departureTime,arrivalTime) " +
                 "FROM trips T,tickets U " +
                 "WHERE T.trip_id = U.trip_id AND U.user_id =" +userId+
-                " ORDER BY DATE(departureTime) ASC";
+                " ORDER BY DATE(departureTime),DATE_FORMAT(departureTime,\"%H:%i\") ASC";
         Connection connection = JDBCUtils.getConnection();
 
         try {

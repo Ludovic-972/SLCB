@@ -39,8 +39,13 @@ public class Menu extends Fragment {
         SharedPreferences preferences = this.requireActivity().getSharedPreferences("userInfos", Context.MODE_PRIVATE);
         fragmentManager = requireActivity().getSupportFragmentManager();
 
+        /*Bouton vers la page d'accueil*/
         ImageButton toHomePage = root.findViewById(R.id.homePageButton);
+
+        /*Bouton vers la page des billets*/
         Button toTickets = root.findViewById(R.id.ticketsPageButton);
+
+        /*Bouton vers la page de compte*/
         ImageButton toAccount = root.findViewById(R.id.accountPageButton);
 
 
@@ -48,6 +53,11 @@ public class Menu extends Fragment {
 
         toTickets.setOnClickListener(view -> MainFragmentReplacement.replace(fragmentManager,new UserTickets()));
 
+
+        /*Si à sa dernière utilisation de l'application l'utilisateur ne s'est pas connecté
+        *   ou s'est déconnecté ce button le renvoie vers à page de connexion/inscription
+        *   sinon vers sa page de compte
+        */
         toAccount.setOnClickListener(view -> {
             if(preferences.getString("mail", "").equals(""))
                 MainFragmentReplacement.replace(fragmentManager,new UserConnection());

@@ -22,8 +22,7 @@ public class TripListAdapter extends BaseAdapter {
     private final List<Trip> tripList;
     private final String typeCarte;
     private final Context context;
-
-
+    
     public TripListAdapter(Context context,List<Trip> tripList, String typeCarte) {
 
         this.layoutInflater = LayoutInflater.from(context);

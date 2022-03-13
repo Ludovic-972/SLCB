@@ -85,6 +85,9 @@ public class Home extends Fragment implements LocationListener {
 
         greetings.setText(text+" "+username+" \uD83D\uDC4B,");
 
+
+        /*La récupération des villes se font dans un nouveau Thread
+        * dont la fin sera attendu pour charger la page*/
         Thread townsRecuperation = new Thread(){
             @Override
             public void run() {
@@ -110,6 +113,10 @@ public class Home extends Fragment implements LocationListener {
             e.printStackTrace();
         }
 
+
+        /*Quand  l'utilisateur clique sur l'EditText pour entrer le jour de son trajet
+        * un DatePickerDialog s'ouvre
+        */
         tripDay.setOnClickListener(view -> {
 
             Calendar c = Calendar.getInstance();
@@ -127,6 +134,9 @@ public class Home extends Fragment implements LocationListener {
             datePickerDialog.show();
         });
 
+        /*Quand  l'utilisateur clique sur l'EditText pour entrer l'heure de son trajet
+         * un TimePickerDialog s'ouvre
+         */
         departureHour.setOnClickListener(view -> {
             Calendar calendar = Calendar.getInstance();
             TimePickerDialog timePickerDialog = new TimePickerDialog(
@@ -138,6 +148,14 @@ public class Home extends Fragment implements LocationListener {
             timePickerDialog.show();
         });
 
+
+        /*En cliquant sur ce bouton l'utilisateur ouvrira un AlertDialog lui indiquant la ville dans
+        * laquelle il est. Si sa localisation n'est pas activée l'application le lui fera remarqué
+        * et si l'application n'a pas la permission d'utiliser le gps du téléphone l'utilisateur
+        * devra accepter la reqûete
+        *
+        * voir @Home::showLocation()
+        */
         userLocation.setOnClickListener(view -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && requireActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -154,6 +172,11 @@ public class Home extends Fragment implements LocationListener {
             }
         });
 
+
+        /*
+         *En cliquant sur ce bouton l'utilisateur (si tous les champs sont remplis) est redirigé vers la page
+         *  affichant les différents trajets disponibles en fonction des entrées de l'utilisateur
+         */
 
         goToRides.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,6 +228,10 @@ public class Home extends Fragment implements LocationListener {
         this.latitude = location.getLatitude();
     }
 
+
+
+    /*Ouvre un AlertDialog après avoir récupérer la ville dans laquelle se trouve l'utilisateur
+    */
     private void showLocation(){
         if (gpsOn()) {
             Toast.makeText(requireContext(), getString(R.string.wait), Toast.LENGTH_LONG).show();
@@ -253,10 +280,7 @@ public class Home extends Fragment implements LocationListener {
         }
     }
 
-    private boolean isNetworkConnected(){
-        return false;
-    }
-
+    /*Vérifie que l'utilisateur a son gps activé*/
     private boolean gpsOn(){
         LocationManager lm = (LocationManager)requireContext().getSystemService(Context.LOCATION_SERVICE);
         boolean gps_enabled = false;
@@ -271,25 +295,6 @@ public class Home extends Fragment implements LocationListener {
 
 
         return gps_enabled;
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putDouble("longitude", longitude);
-        outState.putDouble("latitude", latitude);
-        outState.putString("lastKnownLocation",cityName);
-    }
-
-    @Override
-    public void onViewStateRestored(Bundle inState) {
-        super.onViewStateRestored(inState);
-        if(inState!=null) {
-            this.longitude = (inState.getDouble("longitude", 0));
-            this.latitude = (inState.getDouble("latitude", 0));
-            this.cityName = (inState.getString("lastKnownLocation", ""));
-        }
-
     }
 
 }
